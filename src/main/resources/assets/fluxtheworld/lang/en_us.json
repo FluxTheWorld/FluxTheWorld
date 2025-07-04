@@ -1,0 +1,13 @@
+{
+  "itemGroup.fluxtheworld": "Example Mod Tab",
+  "block.fluxtheworld.example_block": "Example Block",
+  "item.fluxtheworld.example_item": "Example Item",
+
+  "fluxtheworld.configuration.title": "FluxTheWorld Configs",
+  "fluxtheworld.configuration.section.fluxtheworld.common.toml": "FluxTheWorld Configs",
+  "fluxtheworld.configuration.section.fluxtheworld.common.toml.title": "FluxTheWorld Configs",
+  "fluxtheworld.configuration.items": "Item List",
+  "fluxtheworld.configuration.logDirtBlock": "Log Dirt Block",
+  "fluxtheworld.configuration.magicNumberIntroduction": "Magic Number Text",
+  "fluxtheworld.configuration.magicNumber": "Magic Number"
+}
