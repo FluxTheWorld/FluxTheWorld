@@ -1,0 +1,13 @@
+package com.fluxtheworld.client;
+
+import com.fluxtheworld.FTWMod;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+
+@Mod(value = FTWMod.MODID, dist = Dist.CLIENT)
+public class FluxTheWorldClient {
+  public FluxTheWorldClient(ModContainer container) {
+  }
+}
