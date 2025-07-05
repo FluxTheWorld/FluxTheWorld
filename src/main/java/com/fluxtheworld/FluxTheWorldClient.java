@@ -9,6 +9,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent; // Import RegisterMenuScreensEvent
+
+import com.fluxtheworld.electricfurnace.ElectricFurnaceScreen; // Import ElectricFurnaceScreen
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = FluxTheWorld.MODID, dist = Dist.CLIENT)
@@ -27,5 +30,10 @@ public class FluxTheWorldClient {
         // Some client setup code
         FluxTheWorld.LOGGER.info("HELLO FROM CLIENT SETUP");
         FluxTheWorld.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+    }
+
+    @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(FluxTheWorld.ELECTRIC_FURNACE_MENU_TYPE.get(), ElectricFurnaceScreen::new);
     }
 }

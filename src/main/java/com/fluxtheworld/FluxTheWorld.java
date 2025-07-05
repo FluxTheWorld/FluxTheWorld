@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.flag.FeatureFlags; // Import FeatureFlags
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -30,6 +31,12 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.inventory.MenuType;
+
+import com.fluxtheworld.electricfurnace.ElectricFurnaceBlock;
+import com.fluxtheworld.electricfurnace.ElectricFurnaceBlockEntity;
+import com.fluxtheworld.electricfurnace.ElectricFurnaceContainer;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FluxTheWorld.MODID)
@@ -44,11 +51,30 @@ public class FluxTheWorld {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "fluxtheworld" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    // Create a Deferred Register to hold Block Entity Types
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    // Create a Deferred Register to hold Menu Types
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, MODID);
+
 
     // Creates a new Block with the id "fluxtheworld:example_block", combining the namespace and path
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     // Creates a new BlockItem with the id "fluxtheworld:example_block", combining the namespace and path
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+
+    // Electric Furnace Block
+    public static final DeferredBlock<Block> ELECTRIC_FURNACE_BLOCK = BLOCKS.register("electric_furnace",
+            () -> new ElectricFurnaceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5F).noOcclusion()));
+    public static final DeferredItem<BlockItem> ELECTRIC_FURNACE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("electric_furnace", ELECTRIC_FURNACE_BLOCK);
+
+    // Electric Furnace Block Entity Type
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE_BLOCK_ENTITY_TYPE =
+            BLOCK_ENTITY_TYPES.register("electric_furnace", () -> BlockEntityType.Builder.of(ElectricFurnaceBlockEntity::new, ELECTRIC_FURNACE_BLOCK.get()).build(null));
+
+    // Electric Furnace Menu Type
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectricFurnaceContainer>> ELECTRIC_FURNACE_MENU_TYPE =
+            MENU_TYPES.register("electric_furnace", () -> new MenuType<>(ElectricFurnaceContainer::new, FeatureFlags.VANILLA_SET));
+
 
     // Creates a new food item with the id "fluxtheworld:example_id", nutrition 1 and saturation 2
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
@@ -61,6 +87,7 @@ public class FluxTheWorld {
             .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(ELECTRIC_FURNACE_BLOCK_ITEM.get()); // Add Electric Furnace to the tab
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
@@ -75,6 +102,15 @@ public class FluxTheWorld {
         ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
+        // Register the Deferred Register to the mod event bus so block entity types get registered
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        // Register the Deferred Register to the mod event bus so menu types get registered
+        MENU_TYPES.register(modEventBus);
+
+        // Initialize our Block Entity Type and Menu Type
+        ElectricFurnaceBlockEntity.TYPE = ELECTRIC_FURNACE_BLOCK_ENTITY_TYPE.get();
+        ElectricFurnaceContainer.TYPE = ELECTRIC_FURNACE_MENU_TYPE.get();
+
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (FluxTheWorld) to respond directly to events.
@@ -105,6 +141,7 @@ public class FluxTheWorld {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(EXAMPLE_BLOCK_ITEM);
+            event.accept(ELECTRIC_FURNACE_BLOCK_ITEM.get()); // Add Electric Furnace to Building Blocks tab
         }
     }
 
