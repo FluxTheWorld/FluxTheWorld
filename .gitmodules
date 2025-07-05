@@ -1,0 +1,3 @@
+[submodule "refs"]
+	path = refs
+	url = ssh://git@git.kot.tools:2222/rougsig/minecraft-references.git
