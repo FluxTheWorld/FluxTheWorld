@@ -7,7 +7,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 
 @Mod(value = FTWMod.MODID, dist = Dist.CLIENT)
-public class FluxTheWorldClient {
-  public FluxTheWorldClient(ModContainer container) {
+public class FTWClient {
+  public FTWClient(ModContainer container) {
   }
 }

@@ -2,6 +2,7 @@ package com.fluxtheworld;
 
 import org.slf4j.Logger;
 
+import com.fluxtheworld.common.registry.FTWMenus;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,5 +34,6 @@ public class FTWMod {
     BLOCKS.register(modEventBus);
     ITEMS.register(modEventBus);
     CREATIVE_MODE_TABS.register(modEventBus);
+    FTWMenus.MENUS.register(modEventBus);
   }
 }
