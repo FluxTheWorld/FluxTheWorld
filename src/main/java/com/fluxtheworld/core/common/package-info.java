@@ -1,4 +1,5 @@
 @javax.annotation.ParametersAreNonnullByDefault
 @net.minecraft.MethodsReturnNonnullByDefault
 @net.minecraft.FieldsAreNonnullByDefault
-package com.fluxtheworld.common.block;
+
+package com.fluxtheworld.core.common;
