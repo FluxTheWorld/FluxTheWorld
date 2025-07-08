@@ -16,7 +16,6 @@ public class FTWBlockEntity extends BlockEntity {
   }
 
   // region Ticking
-
   public static void tick(Level level, BlockPos pos, BlockState state, FTWBlockEntity blockEntity) {
     if (level.isClientSide) {
       blockEntity.clientTick();
@@ -36,6 +35,5 @@ public class FTWBlockEntity extends BlockEntity {
 
   public void tick() {
   }
-
   // endregion
 }
