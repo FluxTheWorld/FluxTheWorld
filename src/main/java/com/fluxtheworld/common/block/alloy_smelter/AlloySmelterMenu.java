@@ -1,6 +1,5 @@
-package com.fluxtheworld.common.menu;
+package com.fluxtheworld.common.block.alloy_smelter;
 
-import com.fluxtheworld.common.block.entity.AlloySmelterBlockEntity;
 import com.fluxtheworld.common.registry.FTWMenus;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

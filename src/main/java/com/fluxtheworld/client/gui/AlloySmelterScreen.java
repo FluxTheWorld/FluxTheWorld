@@ -1,7 +1,8 @@
 package com.fluxtheworld.client.gui;
 
 import com.fluxtheworld.FTWMod;
-import com.fluxtheworld.common.menu.AlloySmelterMenu;
+import com.fluxtheworld.common.block.alloy_smelter.AlloySmelterMenu;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;

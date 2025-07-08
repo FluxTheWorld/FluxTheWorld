@@ -1,7 +1,5 @@
-package com.fluxtheworld.common.block.entity;
+package com.fluxtheworld.common.block.alloy_smelter;
 
-import com.fluxtheworld.common.crafting.AlloySmelterRecipeInput;
-import com.fluxtheworld.common.menu.AlloySmelterMenu;
 import com.fluxtheworld.common.registry.FTWBlockEntities;
 
 import net.minecraft.core.BlockPos;
@@ -202,7 +200,7 @@ public class AlloySmelterBlockEntity extends BlockEntity implements MenuProvider
     }
 
     if (wasLit != blockEntity.isLit()) {
-      state = state.setValue(com.fluxtheworld.common.block.AlloySmelterBlock.LIT, blockEntity.isLit());
+      state = state.setValue(com.fluxtheworld.common.block.alloy_smelter.AlloySmelterBlock.LIT, blockEntity.isLit());
       level.setBlock(pos, state, 3);
     }
   }

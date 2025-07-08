@@ -3,7 +3,7 @@ package com.fluxtheworld.common.registry;
 import java.util.function.Supplier;
 
 import com.fluxtheworld.FTWMod;
-import com.fluxtheworld.common.menu.AlloySmelterMenu;
+import com.fluxtheworld.common.block.alloy_smelter.AlloySmelterMenu;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.MenuType;

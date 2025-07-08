@@ -1,6 +1,5 @@
-package com.fluxtheworld.common.block;
+package com.fluxtheworld.common.block.alloy_smelter;
 
-import com.fluxtheworld.common.block.entity.AlloySmelterBlockEntity;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
