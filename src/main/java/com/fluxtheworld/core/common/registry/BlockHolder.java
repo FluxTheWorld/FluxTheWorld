@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 
 import net.minecraft.world.level.block.Block;
 
-public class BlockHolder<B extends Block> implements Supplier<B> {
+public class BlockHolder<B extends Block> {
 
   private final String name;
   private final Supplier<B> factory;
@@ -22,9 +22,8 @@ public class BlockHolder<B extends Block> implements Supplier<B> {
     return this.name;
   }
 
-  @Override
-  public B get() {
-    return this.factory.get();
+  public Supplier<B> factory() {
+    return this.factory;
   }
 
   public static class Builder<B extends Block> {

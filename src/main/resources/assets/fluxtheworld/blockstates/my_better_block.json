@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "fluxtheworld:block/my_better_block"
+    }
+  }
+}

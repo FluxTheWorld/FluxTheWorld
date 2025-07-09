@@ -1,5 +1,6 @@
 package com.fluxtheworld.common.block.alloy_smelter;
 
+import com.fluxtheworld.FTWRegistry;
 import com.fluxtheworld.core.common.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.common.registry.BlockEntityTypeHolder;
 
@@ -7,16 +8,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class AlloySmelterBlockEntity extends MachineBlockEntity {
 
-  public static final BlockEntityTypeHolder<AlloySmelterBlockEntity> TYPE = new BlockEntityTypeHolder.Builder<AlloySmelterBlockEntity>()
-      .build();
-
-  public AlloySmelterBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
-    super(type, worldPosition, blockState);
+  public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
+    super(FTWRegistry.ALLOY_SMELTER_BLOCK_ENTITY.get(), worldPosition, blockState);
   }
 
   @Override
