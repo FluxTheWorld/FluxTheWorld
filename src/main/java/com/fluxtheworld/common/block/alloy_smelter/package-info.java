@@ -1,8 +1,5 @@
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-@FieldsAreNonnullByDefault
-package com.fluxtheworld.common.block.alloy_smelter;
+@javax.annotation.ParametersAreNonnullByDefault
+@net.minecraft.MethodsReturnNonnullByDefault
+@net.minecraft.FieldsAreNonnullByDefault
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.FieldsAreNonnullByDefault;
-import net.minecraft.MethodsReturnNonnullByDefault;
+package com.fluxtheworld.common.block.alloy_smelter;

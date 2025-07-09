@@ -29,7 +29,7 @@ public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBl
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
   public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-  public MachineBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
+  public MachineBlock(Supplier<BlockEntityType<BE>> typeSupplier, Properties properties) {
     super(typeSupplier, properties);
     this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
   }

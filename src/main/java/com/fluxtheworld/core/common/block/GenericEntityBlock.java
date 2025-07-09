@@ -19,9 +19,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class GenericEntityBlock<BE extends GenericBlockEntity> extends BaseEntityBlock {
 
-  private final Supplier<BlockEntityType<? extends BE>> typeSupplier;
+  private final Supplier<BlockEntityType<BE>> typeSupplier;
 
-  protected GenericEntityBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
+  protected GenericEntityBlock(Supplier<BlockEntityType<BE>> typeSupplier, Properties properties) {
     super(properties);
     this.typeSupplier = typeSupplier;
   }
@@ -32,7 +32,9 @@ public abstract class GenericEntityBlock<BE extends GenericBlockEntity> extends 
   }
 
   @Override
-  public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+  public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+      Level level,
+      BlockState state,
       BlockEntityType<T> blockEntityType) {
     return createTickerHelper(blockEntityType, typeSupplier.get(), GenericBlockEntity::tick);
   }

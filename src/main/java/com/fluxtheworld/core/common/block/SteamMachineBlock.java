@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class SteamMachineBlock<BE extends SteamMachineBlockEntity> extends MachineBlock<BE> {
 
-  public SteamMachineBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
+  public SteamMachineBlock(Supplier<BlockEntityType<BE>> typeSupplier, Properties properties) {
     super(typeSupplier, properties);
   }
 
