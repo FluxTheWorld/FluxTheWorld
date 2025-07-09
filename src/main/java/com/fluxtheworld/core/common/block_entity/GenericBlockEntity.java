@@ -9,14 +9,15 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.LogicalSide;
 
-public class FTWBlockEntity extends BlockEntity {
+public class GenericBlockEntity extends BlockEntity {
 
-  public FTWBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
+  public GenericBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
     super(type, worldPosition, blockState);
   }
 
   // region Ticking
-  public static void tick(Level level, BlockPos pos, BlockState state, FTWBlockEntity blockEntity) {
+
+  public static void tick(Level level, BlockPos pos, BlockState state, GenericBlockEntity blockEntity) {
     if (level.isClientSide) {
       blockEntity.clientTick();
     } else {
@@ -35,5 +36,6 @@ public class FTWBlockEntity extends BlockEntity {
 
   public void tick() {
   }
+
   // endregion
 }

@@ -19,20 +19,24 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.fml.LogicalSide;
 
-public class MachineBlock<BE extends MachineBlockEntity> extends FTWEntityBlock<BE> {
+public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBlock<BE> {
+
   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+  public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
   public MachineBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
     super(typeSupplier, properties);
-    this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
   }
 
   @Override
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-    builder.add(FACING);
+    builder.add(FACING).add(LIT);
   }
 
   @Nullable
@@ -46,17 +50,30 @@ public class MachineBlock<BE extends MachineBlockEntity> extends FTWEntityBlock<
     return RenderShape.MODEL;
   }
 
+  // region MenuProvider
+
   @Override
-  protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+  protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+      BlockHitResult hitResult) {
     if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
-      if (level.isClientSide) {
-        return InteractionResult.SUCCESS;
-      } else {
-        player.openMenu(menuProvider);
-        return InteractionResult.CONSUME;
+      LogicalSide side = level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
+      InteractionResult result = this.openMenu(side, player, menuProvider);
+      if (result.consumesAction()) {
+        return result;
       }
     }
 
     return super.useWithoutItem(state, level, pos, player, hitResult);
   }
+
+  protected InteractionResult openMenu(LogicalSide side, Player player, MenuProvider menu) {
+    if (side == LogicalSide.CLIENT) {
+      return InteractionResult.SUCCESS;
+    }
+
+    player.openMenu(menu);
+    return InteractionResult.CONSUME;
+  }
+
+  // endregion
 }

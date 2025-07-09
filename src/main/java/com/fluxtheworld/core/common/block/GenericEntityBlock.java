@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import com.fluxtheworld.core.common.block_entity.FTWBlockEntity;
+import com.fluxtheworld.core.common.block_entity.GenericBlockEntity;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -17,11 +17,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class FTWEntityBlock<BE extends FTWBlockEntity> extends BaseEntityBlock {
+public abstract class GenericEntityBlock<BE extends GenericBlockEntity> extends BaseEntityBlock {
 
   private final Supplier<BlockEntityType<? extends BE>> typeSupplier;
 
-  protected FTWEntityBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
+  protected GenericEntityBlock(Supplier<BlockEntityType<? extends BE>> typeSupplier, Properties properties) {
     super(properties);
     this.typeSupplier = typeSupplier;
   }
@@ -34,7 +34,7 @@ public abstract class FTWEntityBlock<BE extends FTWBlockEntity> extends BaseEnti
   @Override
   public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
       BlockEntityType<T> blockEntityType) {
-    return createTickerHelper(blockEntityType, typeSupplier.get(), FTWBlockEntity::tick);
+    return createTickerHelper(blockEntityType, typeSupplier.get(), GenericBlockEntity::tick);
   }
 
   @Override
