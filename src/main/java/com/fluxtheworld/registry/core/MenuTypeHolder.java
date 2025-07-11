@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -48,6 +47,7 @@ public class MenuTypeHolder<M extends AbstractContainerMenu> {
       return this;
     }
 
+    @SuppressWarnings("null")
     public MenuTypeHolder<M> build() {
       Preconditions.checkNotNull(this.name, "name is null");
       Preconditions.checkNotNull(this.factory, "factory is null");

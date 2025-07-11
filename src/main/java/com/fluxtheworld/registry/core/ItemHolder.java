@@ -43,6 +43,7 @@ public class ItemHolder<I extends Item> {
       return this;
     }
 
+    @SuppressWarnings("null")
     public ItemHolder<I> build() {
       Objects.requireNonNull(this.name, "name is null");
       Objects.requireNonNull(this.factory, "factory is null");

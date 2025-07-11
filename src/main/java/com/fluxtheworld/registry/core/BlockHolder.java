@@ -44,10 +44,11 @@ public class BlockHolder<B extends Block> {
       return this;
     }
 
+    @SuppressWarnings("null")
     public BlockHolder<B> build() {
       Preconditions.checkNotNull(this.name, "name is null");
       Preconditions.checkNotNull(this.factory, "factory is null");
-      return new BlockHolder<>(name, factory);
+      return new BlockHolder<>(this.name, this.factory);
     }
 
   }

@@ -54,6 +54,7 @@ public class BlockEntityTypeHolder<BE extends BlockEntity> {
       return this;
     }
 
+    @SuppressWarnings("null")
     public BlockEntityTypeHolder<BE> build() {
       Objects.requireNonNull(this.name, "name is null");
       Objects.requireNonNull(this.factory, "factory is null");

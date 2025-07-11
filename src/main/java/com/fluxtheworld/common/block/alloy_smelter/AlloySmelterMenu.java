@@ -3,7 +3,6 @@ package com.fluxtheworld.common.block.alloy_smelter;
 import com.fluxtheworld.core.common.menu.MachineMenu;
 import com.fluxtheworld.registry.BlockEntityTypeRegistry;
 import com.fluxtheworld.registry.MenuTypeRegistry;
-import com.fluxtheworld.registry.core.MenuTypeHolder;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
