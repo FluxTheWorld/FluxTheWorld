@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.common.registry;
+package com.fluxtheworld.registry.core;
 
 import java.util.function.Supplier;
 

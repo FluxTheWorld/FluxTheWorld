@@ -2,6 +2,10 @@ package com.fluxtheworld;
 
 import org.slf4j.Logger;
 
+import com.fluxtheworld.registry.BlockEntityTypeRegistry;
+import com.fluxtheworld.registry.BlockRegistry;
+import com.fluxtheworld.registry.ItemRegistry;
+import com.fluxtheworld.registry.MenuTypeRegistry;
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.bus.api.IEventBus;
@@ -15,6 +19,9 @@ public class FTWMod {
   public static final Logger LOGGER = LogUtils.getLogger();
 
   public FTWMod(IEventBus modEventBus, ModContainer modContainer) {
-    FTWRegistry.register(modEventBus);
+    BlockRegistry.register(modEventBus);
+    BlockEntityTypeRegistry.register(modEventBus);
+    MenuTypeRegistry.register(modEventBus);
+    ItemRegistry.register(modEventBus);
   }
 }

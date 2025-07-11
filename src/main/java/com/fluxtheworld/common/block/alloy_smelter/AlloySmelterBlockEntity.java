@@ -1,8 +1,7 @@
 package com.fluxtheworld.common.block.alloy_smelter;
 
-import com.fluxtheworld.FTWRegistry;
 import com.fluxtheworld.core.common.block_entity.MachineBlockEntity;
-import com.fluxtheworld.core.common.registry.BlockEntityTypeHolder;
+import com.fluxtheworld.registry.BlockEntityTypeRegistry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class AlloySmelterBlockEntity extends MachineBlockEntity {
 
   public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
-    super(FTWRegistry.ALLOY_SMELTER_BLOCK_ENTITY.get(), worldPosition, blockState);
+    super(BlockEntityTypeRegistry.ALLOY_SMELTER.get(), worldPosition, blockState);
   }
 
   @Override

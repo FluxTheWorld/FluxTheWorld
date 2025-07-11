@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.common.registry;
+package com.fluxtheworld.registry.core;
 
 import java.util.function.Supplier;
 
@@ -6,10 +6,10 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 public class MenuTypeHolder<M extends AbstractContainerMenu> {
@@ -51,7 +51,7 @@ public class MenuTypeHolder<M extends AbstractContainerMenu> {
     public MenuTypeHolder<M> build() {
       Preconditions.checkNotNull(this.name, "name is null");
       Preconditions.checkNotNull(this.factory, "factory is null");
-      return new MenuTypeHolder<>(this.name, () -> new MenuType<M>(this.factory, FeatureFlags.DEFAULT_FLAGS));
+      return new MenuTypeHolder<>(this.name, () -> IMenuTypeExtension.create(this.factory));
     }
 
   }

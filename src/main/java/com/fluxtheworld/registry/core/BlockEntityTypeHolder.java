@@ -1,10 +1,9 @@
-package com.fluxtheworld.core.common.registry;
+package com.fluxtheworld.registry.core;
 
-import java.util.HashSet;
-import java.util.stream.Collectors;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 

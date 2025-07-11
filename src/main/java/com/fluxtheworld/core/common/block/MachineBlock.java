@@ -8,6 +8,7 @@ import com.fluxtheworld.core.common.block_entity.MachineBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.fml.LogicalSide;
 
 public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBlock<BE> {
 
@@ -56,8 +56,7 @@ public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBl
   protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
       BlockHitResult hitResult) {
     if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
-      LogicalSide side = level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER;
-      InteractionResult result = this.openMenu(side, player, menuProvider);
+      InteractionResult result = this.openMenu(state, level, pos, player, hitResult, menuProvider);
       if (result.consumesAction()) {
         return result;
       }
@@ -66,13 +65,13 @@ public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBl
     return super.useWithoutItem(state, level, pos, player, hitResult);
   }
 
-  protected InteractionResult openMenu(LogicalSide side, Player player, MenuProvider menu) {
-    if (side == LogicalSide.CLIENT) {
-      return InteractionResult.SUCCESS;
+  protected InteractionResult openMenu(BlockState state, Level level, BlockPos pos, Player player,
+      BlockHitResult hitResult, MenuProvider menuProvider) {
+    if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+      serverPlayer.openMenu(menuProvider, pos);
     }
 
-    player.openMenu(menu);
-    return InteractionResult.CONSUME;
+    return InteractionResult.SUCCESS;
   }
 
   // endregion
