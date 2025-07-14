@@ -1,8 +1,8 @@
-package com.fluxtheworld.common.block.alloy_smelter;
+package com.fluxtheworld.machine.alloy_smelter;
 
 import com.fluxtheworld.core.common.menu.MachineMenu;
-import com.fluxtheworld.registry.BlockEntityTypeRegistry;
-import com.fluxtheworld.registry.MenuTypeRegistry;
+import com.fluxtheworld.core.common.registry.BlockEntityTypeRegistry;
+import com.fluxtheworld.core.common.registry.MenuTypeRegistry;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

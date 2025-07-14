@@ -1,7 +1,7 @@
-package com.fluxtheworld.common.block.alloy_smelter;
+package com.fluxtheworld.machine.alloy_smelter;
 
 import com.fluxtheworld.core.common.block.MachineBlock;
-import com.fluxtheworld.registry.BlockEntityTypeRegistry;
+import com.fluxtheworld.core.common.registry.BlockEntityTypeRegistry;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 

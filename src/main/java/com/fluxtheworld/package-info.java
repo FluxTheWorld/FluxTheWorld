@@ -2,4 +2,4 @@
 @net.minecraft.MethodsReturnNonnullByDefault
 @net.minecraft.FieldsAreNonnullByDefault
 
-package com.fluxtheworld.registry.holder;
+package com.fluxtheworld;

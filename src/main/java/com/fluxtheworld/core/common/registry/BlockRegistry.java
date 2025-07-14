@@ -1,8 +1,8 @@
-package com.fluxtheworld.registry;
+package com.fluxtheworld.core.common.registry;
 
 import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.common.block.alloy_smelter.AlloySmelterBlock;
-import com.fluxtheworld.registry.holder.BlockHolder;
+import com.fluxtheworld.core.common.registry.holder.BlockHolder;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;

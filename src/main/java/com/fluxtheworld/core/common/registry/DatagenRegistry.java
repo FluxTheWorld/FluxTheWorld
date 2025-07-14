@@ -1,4 +1,4 @@
-package com.fluxtheworld.registry;
+package com.fluxtheworld.core.common.registry;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.data.event.GatherDataEvent;

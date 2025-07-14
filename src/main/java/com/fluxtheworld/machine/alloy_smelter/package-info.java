@@ -2,4 +2,4 @@
 @net.minecraft.MethodsReturnNonnullByDefault
 @net.minecraft.FieldsAreNonnullByDefault
 
-package com.fluxtheworld.client.block.alloy_smelter;
+package com.fluxtheworld.machine.alloy_smelter;

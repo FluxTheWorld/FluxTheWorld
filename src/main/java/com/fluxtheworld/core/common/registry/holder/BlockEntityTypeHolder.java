@@ -1,4 +1,4 @@
-package com.fluxtheworld.registry.holder;
+package com.fluxtheworld.core.common.registry.holder;
 
 import java.util.Objects;
 import java.util.Set;
