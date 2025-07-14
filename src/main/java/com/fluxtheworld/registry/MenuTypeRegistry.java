@@ -2,7 +2,7 @@ package com.fluxtheworld.registry;
 
 import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.common.block.alloy_smelter.AlloySmelterMenu;
-import com.fluxtheworld.registry.core.MenuTypeHolder;
+import com.fluxtheworld.registry.holder.MenuTypeHolder;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
