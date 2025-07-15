@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.common.register.holder;
+package com.fluxtheworld.core.common.register.block;
 
 import java.util.function.Supplier;
 

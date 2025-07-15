@@ -1,6 +1,6 @@
 package com.fluxtheworld;
 
-import com.fluxtheworld.core.common.register.holder.BlockHolder;
+import com.fluxtheworld.core.common.register.block.BlockHolder;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;

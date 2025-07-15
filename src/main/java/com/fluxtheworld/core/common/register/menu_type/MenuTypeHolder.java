@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.common.register.holder;
+package com.fluxtheworld.core.common.register.menu_type;
 
 import java.util.function.Supplier;
 
@@ -33,9 +33,6 @@ public class MenuTypeHolder<M extends AbstractContainerMenu> {
 
     private @Nullable String name;
     private @Nullable IContainerFactory<M> factory;
-
-    public Builder() {
-    }
 
     public Builder<M> name(String name) {
       this.name = name;
