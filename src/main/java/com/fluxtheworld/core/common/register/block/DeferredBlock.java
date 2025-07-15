@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.common.register;
+package com.fluxtheworld.core.common.register.block;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
