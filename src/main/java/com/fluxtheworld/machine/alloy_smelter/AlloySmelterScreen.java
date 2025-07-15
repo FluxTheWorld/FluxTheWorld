@@ -1,6 +1,5 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.common.block.alloy_smelter.AlloySmelterMenu;
 import com.fluxtheworld.core.client.gui.screen.MachineScreen;
 
 import net.minecraft.client.gui.GuiGraphics;

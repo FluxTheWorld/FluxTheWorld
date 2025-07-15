@@ -30,9 +30,6 @@ public class ItemHolder<I extends Item> {
     private @Nullable String name;
     private @Nullable Supplier<I> factory;
 
-    public Builder() {
-    }
-
     public Builder<I> name(String name) {
       this.name = name;
       return this;

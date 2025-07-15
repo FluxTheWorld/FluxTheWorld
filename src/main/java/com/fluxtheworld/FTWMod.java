@@ -2,17 +2,15 @@ package com.fluxtheworld;
 
 import org.slf4j.Logger;
 
-import com.fluxtheworld.core.common.register.BlockEntityTypeRegistry;
-import com.fluxtheworld.core.common.register.BlockRegistry;
-import com.fluxtheworld.core.common.register.ItemRegistry;
-import com.fluxtheworld.core.common.register.MenuTypeRegistry;
+import com.fluxtheworld.core.common.register.ClientRegister;
+import com.fluxtheworld.core.common.register.CommonRegister;
+import com.fluxtheworld.core.common.register.ServerRegister;
+import com.fluxtheworld.machine.alloy_smelter.AlloySmelterRegistry;
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLModContainer;
 
 @Mod(FTWMod.MOD_ID)
 public class FTWMod {
@@ -20,7 +18,11 @@ public class FTWMod {
   public static final String MOD_ID = "fluxtheworld";
   public static final Logger LOGGER = LogUtils.getLogger();
 
-  public FTWMod(FMLModContainer container, IEventBus eventBus, Dist dist) {
+  public FTWMod(IEventBus eventBus, Dist dist) {
+    CommonRegister register = dist.isClient() ? new ClientRegister(MOD_ID) : new ServerRegister(MOD_ID);
+    register.register(eventBus);
+
+    AlloySmelterRegistry.register(register, dist);
   }
 
 }

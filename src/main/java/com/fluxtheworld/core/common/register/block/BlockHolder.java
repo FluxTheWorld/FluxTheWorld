@@ -31,9 +31,6 @@ public class BlockHolder<B extends Block> {
     private @Nullable String name;
     private @Nullable Supplier<B> factory;
 
-    public Builder() {
-    }
-
     public Builder<B> name(String name) {
       this.name = name;
       return this;

@@ -11,12 +11,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public class BlockEntityTypeHolder<BE extends BlockEntity> {
+public class BlockEntityTypeHolder<B extends BlockEntity> {
 
   private final String name;
-  private final Supplier<BlockEntityType<BE>> factory;
+  private final Supplier<BlockEntityType<B>> factory;
 
-  public BlockEntityTypeHolder(String name, Supplier<BlockEntityType<BE>> factory) {
+  public BlockEntityTypeHolder(String name, Supplier<BlockEntityType<B>> factory) {
     this.name = name;
     this.factory = factory;
   }
@@ -25,42 +25,39 @@ public class BlockEntityTypeHolder<BE extends BlockEntity> {
     return this.name;
   }
 
-  public Supplier<BlockEntityType<BE>> factory() {
+  public Supplier<BlockEntityType<B>> factory() {
     return this.factory;
   }
 
-  public static class Builder<BE extends BlockEntity> {
+  public static class Builder<B extends BlockEntity> {
 
     private @Nullable String name;
-    private @Nullable BlockEntityType.BlockEntitySupplier<BE> factory;
+    private @Nullable BlockEntityType.BlockEntitySupplier<B> factory;
     private @Nullable Set<Supplier<? extends Block>> blocks;
 
-    public Builder() {
-    }
-
-    public Builder<BE> name(String name) {
+    public Builder<B> name(String name) {
       this.name = name;
       return this;
     }
 
-    public Builder<BE> factory(BlockEntityType.BlockEntitySupplier<BE> factory) {
+    public Builder<B> factory(BlockEntityType.BlockEntitySupplier<B> factory) {
       this.factory = factory;
       return this;
     }
 
     @SafeVarargs
-    public final Builder<BE> blocks(Supplier<? extends Block>... blocks) {
+    public final Builder<B> blocks(Supplier<? extends Block>... blocks) {
       this.blocks = Set.of(blocks);
       return this;
     }
 
     @SuppressWarnings("null")
-    public BlockEntityTypeHolder<BE> build() {
+    public BlockEntityTypeHolder<B> build() {
       Objects.requireNonNull(this.name, "name is null");
       Objects.requireNonNull(this.factory, "factory is null");
       Objects.requireNonNull(this.blocks, "blocksSupplier is null");
-      return new BlockEntityTypeHolder<BE>(this.name, () -> new BlockEntityType<BE>(this.factory,
-          this.blocks.stream().map((it) -> it.get()).collect(Collectors.toSet()), null));
+      return new BlockEntityTypeHolder<>(this.name, () -> new BlockEntityType<B>(this.factory,
+          this.blocks.stream().map(Supplier::get).collect(Collectors.toSet()), null));
     }
 
   }
