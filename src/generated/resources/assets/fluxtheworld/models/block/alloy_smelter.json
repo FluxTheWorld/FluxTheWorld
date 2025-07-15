@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "fluxtheworld:block/alloy_smelter"
+    "north": "fluxtheworld:block/alloy_smelter_front"
   }
 }

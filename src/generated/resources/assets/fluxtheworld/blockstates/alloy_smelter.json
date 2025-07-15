@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "fluxtheworld:block/alloy_smelter"
+      "model": "fluxtheworld:block/alloy_smelter_combined"
     }
   }
 }

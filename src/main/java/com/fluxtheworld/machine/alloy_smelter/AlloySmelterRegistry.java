@@ -13,10 +13,13 @@ import com.fluxtheworld.core.common.register.menu_type.DeferredMenuType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 public class AlloySmelterRegistry {
@@ -46,8 +49,21 @@ public class AlloySmelterRegistry {
       return IMenuTypeExtension.create(AlloySmelterMenu::new);
     });
 
-    register.datagen.registerBlockStateProvider((provider) -> {
-      provider.simpleBlock(BLOCK.get());
+    register.datagen.registerBlockStateProvider((p) -> {
+      BlockModelBuilder machineModel = p.models().cubeBottomTop("machine",
+          p.modLoc("block/machine_side"), p.modLoc("block/machine_bottom"), p.modLoc("block/machine_top"));
+
+      BlockModelBuilder alloySmelterModel = p.models()
+          .withExistingParent("alloy_smelter", p.mcLoc("minecraft:block/cube"))
+          .texture("north", p.modLoc("block/alloy_smelter_front"));
+
+      BlockModelBuilder alloySmelterModelCombined = p.models().getBuilder("alloy_smelter_combined")
+          .customLoader(CompositeModelBuilder::begin)
+          .child("machine", machineModel)
+          .child("alloy_smelter", alloySmelterModel)
+          .end();
+
+      p.simpleBlockWithItem(BLOCK.get(), alloySmelterModelCombined);
     });
 
     if (dist.isClient()) {
