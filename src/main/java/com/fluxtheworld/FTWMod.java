@@ -2,10 +2,10 @@ package com.fluxtheworld;
 
 import org.slf4j.Logger;
 
-import com.fluxtheworld.core.common.registry.BlockEntityTypeRegistry;
-import com.fluxtheworld.core.common.registry.BlockRegistry;
-import com.fluxtheworld.core.common.registry.ItemRegistry;
-import com.fluxtheworld.core.common.registry.MenuTypeRegistry;
+import com.fluxtheworld.core.common.register.BlockEntityTypeRegistry;
+import com.fluxtheworld.core.common.register.BlockRegistry;
+import com.fluxtheworld.core.common.register.ItemRegistry;
+import com.fluxtheworld.core.common.register.MenuTypeRegistry;
 import com.mojang.logging.LogUtils;
 
 import net.neoforged.api.distmarker.Dist;

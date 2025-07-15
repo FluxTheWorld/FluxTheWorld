@@ -1,7 +1,7 @@
-package com.fluxtheworld.core.common.registry;
+package com.fluxtheworld.core.common.register;
 
 import com.fluxtheworld.FTWMod;
-import com.fluxtheworld.core.common.registry.holder.ItemHolder;
+import com.fluxtheworld.core.common.register.holder.ItemHolder;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;

@@ -1,7 +1,7 @@
 package com.fluxtheworld;
 
 import com.fluxtheworld.client.block.alloy_smelter.AlloySmelterScreen;
-import com.fluxtheworld.core.common.registry.MenuTypeRegistry;
+import com.fluxtheworld.core.common.register.MenuTypeRegistry;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
