@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 public class AlloySmelterRegistry {
@@ -43,6 +44,10 @@ public class AlloySmelterRegistry {
 
     MENU_TYPE = register.menuTypes.register("alloy_smelter", () -> {
       return IMenuTypeExtension.create(AlloySmelterMenu::new);
+    });
+
+    register.datagen.registerBlockStateProvider((provider) -> {
+      provider.simpleBlock(BLOCK.get());
     });
 
     if (dist.isClient()) {
