@@ -1,7 +1,34 @@
 {
   "variants": {
-    "": {
-      "model": "fluxtheworld:block/alloy_smelter_combined"
+    "facing=east,lit=false": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 90
+    },
+    "facing=north,lit=false": {
+      "model": "fluxtheworld:block/alloy_smelter"
+    },
+    "facing=north,lit=true": {
+      "model": "fluxtheworld:block/alloy_smelter"
+    },
+    "facing=south,lit=false": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "fluxtheworld:block/alloy_smelter",
+      "y": 270
     }
   }
 }

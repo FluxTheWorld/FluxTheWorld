@@ -1,6 +1,5 @@
-// 1.21.1	2025-07-15T21:52:57.88770865	Block States: fluxtheworld
-acfc20d10f04b081a5c46b5c881b2c6be12390f6 assets/fluxtheworld/blockstates/alloy_smelter.json
-84b5791e44f567019321713b9f96a3576d329965 assets/fluxtheworld/models/block/alloy_smelter.json
-00f4b18e0910db7e4a4fb40f267dde3a9990a6f2 assets/fluxtheworld/models/block/alloy_smelter_combined.json
-525c8b3ecbd05a9f362728855d8020fa38372816 assets/fluxtheworld/models/block/machine.json
-c9fb883597d89555708c20e33d0b33c211479968 assets/fluxtheworld/models/item/alloy_smelter.json
+// 1.21.1	2025-07-16T18:40:20.127961176	Block States: fluxtheworld
+fd741781c8bc0944351721390250f48380fbdebe assets/fluxtheworld/blockstates/alloy_smelter.json
+6d35a24bccabb5991586c7dacc88aee56d283aa5 assets/fluxtheworld/models/block/alloy_smelter.json
+c1c2c5491b85fae966f729e5d913ffe9fc066d5c assets/fluxtheworld/models/block/alloy_smelter_faces.json
+c63cc391b2794abaa2132c2bde6891fe7eac3901 assets/fluxtheworld/models/item/alloy_smelter.json

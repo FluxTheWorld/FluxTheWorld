@@ -2,6 +2,7 @@ package com.fluxtheworld.machine.alloy_smelter;
 
 import java.util.Set;
 
+import com.fluxtheworld.core.common.block.MachineBlock;
 import com.fluxtheworld.core.common.register.ClientRegister;
 import com.fluxtheworld.core.common.register.CommonRegister;
 import com.fluxtheworld.core.common.register.block.DeferredBlock;
@@ -10,6 +11,9 @@ import com.fluxtheworld.core.common.register.container_screen.ContainerScreenHol
 import com.fluxtheworld.core.common.register.item.DeferredItem;
 import com.fluxtheworld.core.common.register.menu_type.DeferredMenuType;
 
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -19,6 +23,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
@@ -50,20 +56,43 @@ public class AlloySmelterRegistry {
     });
 
     register.datagen.registerBlockStateProvider((p) -> {
-      BlockModelBuilder machineModel = p.models().cubeBottomTop("machine",
-          p.modLoc("block/machine_side"), p.modLoc("block/machine_bottom"), p.modLoc("block/machine_top"));
-
-      BlockModelBuilder alloySmelterModel = p.models()
-          .withExistingParent("alloy_smelter", p.mcLoc("minecraft:block/cube"))
-          .texture("north", p.modLoc("block/alloy_smelter_front"));
-
-      BlockModelBuilder alloySmelterModelCombined = p.models().getBuilder("alloy_smelter_combined")
+      p.models().getBuilder("alloy_smelter_faces")
           .customLoader(CompositeModelBuilder::begin)
-          .child("machine", machineModel)
-          .child("alloy_smelter", alloySmelterModel)
+          .child("face_north", p.models().nested()
+              .parent(p.models().getExistingFile(p.modLoc("block/face_north")))
+              .renderType(p.mcLoc("cutout"))
+              .texture("face", p.modLoc("block/alloy_smelter_front")))
           .end();
 
-      p.simpleBlockWithItem(BLOCK.get(), alloySmelterModelCombined);
+      p.models().getBuilder("alloy_smelter")
+          .parent(p.models().getExistingFile(p.mcLoc("block/cube")))
+          .texture("particle", p.modLoc("block/machine_side"))
+          .customLoader(CompositeModelBuilder::begin)
+          .child("machine", p.models().nested().parent(p.models().getExistingFile(p.modLoc("block/machine"))))
+          .child("alloy_smelter_faces", p.models().nested().parent(p.models().getExistingFile(p.modLoc("block/alloy_smelter_faces"))))
+          .end();
+
+      p.itemModels().getBuilder("alloy_smelter")
+          .parent(p.itemModels().getExistingFile(p.mcLoc("block/cube")))
+          .customLoader(CompositeModelBuilder::begin)
+          .child("machine", p.itemModels().nested().parent(p.models().getExistingFile(p.modLoc("block/machine"))))
+          .child("alloy_smelter_faces", p.itemModels().nested().parent(p.models().getExistingFile(p.modLoc("block/alloy_smelter_faces"))))
+          .end();
+
+      p.getVariantBuilder(BLOCK.get()).forAllStates(state -> {
+        ConfiguredModel.Builder<?> builder = ConfiguredModel.builder()
+            .modelFile(p.models().getExistingFile(p.modLoc("alloy_smelter")));
+
+        Direction facing = state.getValue(MachineBlock.FACING);
+        if (facing == Direction.EAST)
+          builder.rotationY(90);
+        if (facing == Direction.SOUTH)
+          builder.rotationY(180);
+        if (facing == Direction.WEST)
+          builder.rotationY(270);
+
+        return builder.build();
+      });
     });
 
     if (dist.isClient()) {

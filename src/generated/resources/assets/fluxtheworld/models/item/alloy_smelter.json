@@ -1,3 +1,16 @@
 {
-  "parent": "fluxtheworld:block/alloy_smelter_combined"
+  "parent": "minecraft:block/cube",
+  "children": {
+    "alloy_smelter_faces": {
+      "parent": "fluxtheworld:block/alloy_smelter_faces"
+    },
+    "machine": {
+      "parent": "fluxtheworld:block/machine"
+    }
+  },
+  "item_render_order": [
+    "machine",
+    "alloy_smelter_faces"
+  ],
+  "loader": "neoforge:composite"
 }
