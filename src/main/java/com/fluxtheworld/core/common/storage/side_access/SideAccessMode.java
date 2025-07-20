@@ -24,12 +24,14 @@ public enum SideAccessMode implements StringRepresentable {
     }
   }
 
-  private final int id;
-  private final String name;
-  private final boolean input;
-  private final boolean output;
-  private final boolean force;
-  private final boolean canConnect;
+  final int id;
+  final String name;
+  final boolean input;
+  final boolean output;
+  final boolean push;
+  final boolean pull;
+  final boolean force;
+  final boolean canConnect;
 
   SideAccessMode(int id, String name, boolean input, boolean output, boolean force, boolean canConnect) {
     this.id = id;
@@ -37,31 +39,9 @@ public enum SideAccessMode implements StringRepresentable {
     this.input = input;
     this.output = output;
     this.force = force;
+    this.push = output && force;
+    this.pull = input && force;
     this.canConnect = canConnect;
-  }
-
-  public boolean canInput() {
-    return input;
-  }
-
-  public boolean canOutput() {
-    return output;
-  }
-
-  public boolean canConnect() {
-    return canConnect;
-  }
-
-  public boolean canPush() {
-    return canOutput() && canForce();
-  }
-
-  public boolean canPull() {
-    return canInput() && canForce();
-  }
-
-  public boolean canForce() {
-    return force;
   }
 
   public SideAccessMode next() {
