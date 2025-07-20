@@ -1,6 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.core.client.gui.screen.MachineScreen;
+import com.fluxtheworld.core.gui.screen.MachineScreen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

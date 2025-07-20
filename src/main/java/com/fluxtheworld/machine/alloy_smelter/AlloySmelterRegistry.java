@@ -2,14 +2,14 @@ package com.fluxtheworld.machine.alloy_smelter;
 
 import java.util.Set;
 
-import com.fluxtheworld.core.common.block.MachineBlock;
-import com.fluxtheworld.core.common.register.ClientRegister;
-import com.fluxtheworld.core.common.register.CommonRegister;
-import com.fluxtheworld.core.common.register.block.DeferredBlock;
-import com.fluxtheworld.core.common.register.block_entity_type.DeferredBlockEntityType;
-import com.fluxtheworld.core.common.register.container_screen.ContainerScreenHolder;
-import com.fluxtheworld.core.common.register.item.DeferredItem;
-import com.fluxtheworld.core.common.register.menu_type.DeferredMenuType;
+import com.fluxtheworld.core.block.MachineBlock;
+import com.fluxtheworld.core.register.ClientRegister;
+import com.fluxtheworld.core.register.CommonRegister;
+import com.fluxtheworld.core.register.block.DeferredBlock;
+import com.fluxtheworld.core.register.block_entity_type.DeferredBlockEntityType;
+import com.fluxtheworld.core.register.container_screen.ContainerScreenHolder;
+import com.fluxtheworld.core.register.item.DeferredItem;
+import com.fluxtheworld.core.register.menu_type.DeferredMenuType;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.inventory.MenuType;

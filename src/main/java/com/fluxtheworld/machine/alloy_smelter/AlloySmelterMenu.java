@@ -1,6 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.core.common.menu.MachineMenu;
+import com.fluxtheworld.core.menu.MachineMenu;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

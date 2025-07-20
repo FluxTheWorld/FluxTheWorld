@@ -2,9 +2,9 @@ package com.fluxtheworld;
 
 import org.slf4j.Logger;
 
-import com.fluxtheworld.core.common.register.ClientRegister;
-import com.fluxtheworld.core.common.register.CommonRegister;
-import com.fluxtheworld.core.common.register.ServerRegister;
+import com.fluxtheworld.core.register.ClientRegister;
+import com.fluxtheworld.core.register.CommonRegister;
+import com.fluxtheworld.core.register.ServerRegister;
 import com.fluxtheworld.machine.alloy_smelter.AlloySmelterRegistry;
 import com.mojang.logging.LogUtils;
 

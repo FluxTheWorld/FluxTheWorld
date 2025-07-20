@@ -1,11 +1,11 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.core.common.block_entity.MachineBlockEntity;
-import com.fluxtheworld.core.common.storage.item.ItemStorage;
-import com.fluxtheworld.core.common.storage.item.ItemStorageCapabilityProvider;
-import com.fluxtheworld.core.common.storage.item.ItemStorageLayout;
-import com.fluxtheworld.core.common.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
-import com.fluxtheworld.core.common.storage.side_access.SideAccessConfig;
+import com.fluxtheworld.core.block_entity.MachineBlockEntity;
+import com.fluxtheworld.core.storage.item.ItemStorage;
+import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider;
+import com.fluxtheworld.core.storage.item.ItemStorageLayout;
+import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
+import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;

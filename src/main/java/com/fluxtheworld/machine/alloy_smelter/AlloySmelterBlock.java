@@ -1,6 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.core.common.block.MachineBlock;
+import com.fluxtheworld.core.block.MachineBlock;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 

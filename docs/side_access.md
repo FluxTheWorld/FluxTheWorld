@@ -1,6 +1,6 @@
 # Side Access Package Documentation
 
-This package (`com.fluxtheworld.core.common.storage.side_access`) provides a flexible and extensible system for managing and configuring side-based access for machines within the FluxTheWorld project. It allows machines to define how their various sides (e.g., top, bottom, front) interact with the environment, specifically regarding the flow of items, fluids, or energy.
+This package (`com.fluxtheworld.core.storage.side_access`) provides a flexible and extensible system for managing and configuring side-based access for machines within the FluxTheWorld project. It allows machines to define how their various sides (e.g., top, bottom, front) interact with the environment, specifically regarding the flow of items, fluids, or energy.
 
 ## Core Components:
 
