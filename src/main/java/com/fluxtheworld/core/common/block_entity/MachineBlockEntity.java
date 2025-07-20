@@ -1,9 +1,8 @@
 package com.fluxtheworld.core.common.block_entity;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.common.storage.side_access.SideAccessConfig;
-import com.fluxtheworld.core.common.storage.side_access.SideAccessMode;
 import com.fluxtheworld.core.common.task.MachineTask;
 
 import net.minecraft.core.BlockPos;
@@ -18,20 +17,10 @@ import net.minecraft.world.level.block.state.BlockState;
 public abstract class MachineBlockEntity extends GenericBlockEntity implements MenuProvider {
 
   protected MachineTask task;
-  protected SideAccessConfig itemAccess;
-  protected SideAccessConfig fluidAccess;
 
   protected MachineBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
-    this(type, worldPosition, blockState, new SideAccessConfig(SideAccessMode.DISABLED), new SideAccessConfig(SideAccessMode.DISABLED));
-    this.task = MachineTask.NONE;
-  }
-
-  protected MachineBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState,
-      SideAccessConfig itemAccess, SideAccessConfig fluidAccess) {
     super(type, worldPosition, blockState);
     this.task = MachineTask.NONE;
-    this.itemAccess = itemAccess;
-    this.fluidAccess = fluidAccess;
   }
 
   // region MenuProvider
