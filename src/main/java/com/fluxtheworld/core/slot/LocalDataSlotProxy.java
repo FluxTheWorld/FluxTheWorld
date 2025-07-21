@@ -27,7 +27,7 @@ public class LocalDataSlotProxy<T> implements MutableDataSlot<T> {
     this.original.set(value);
 
     if (this.checkAndClearUpdateFlag()) {
-      SyncDataSlotsPacket.ListEntry entry = new SyncDataSlotsPacket.ListEntry(this.index, this.encodePayload());
+      SyncDataSlotsPacket.ListEntry entry = new SyncDataSlotsPacket.ListEntry(this.index, this.original.encodePayload());
       PacketDistributor.sendToServer(new SyncDataSlotsPacket(this.containerId, List.of(entry)));
     }
   }

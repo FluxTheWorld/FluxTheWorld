@@ -36,14 +36,23 @@ public abstract class GenericMenu extends AbstractContainerMenu {
 
   // region Synchronization
 
-  @SuppressWarnings("java:S2177")
-  protected <T> void addDataSlot(MutableDataSlot<T> dataSlot) {
+  protected <T> MutableDataSlot<T> addMutableDataSlot(MutableDataSlot<T> dataSlot) {
+    MutableDataSlot<T> result;
+
     if (playerInventory.player instanceof LocalPlayer) {
-      this.dataSlots.add(new LocalDataSlotProxy<>(dataSlot, this.dataSlots.size(), this.containerId));
+      result = new LocalDataSlotProxy<>(dataSlot, this.dataSlots.size(), this.containerId);
+      this.dataSlots.add(result);
     }
     else {
-      this.dataSlots.add(dataSlot);
+      result = dataSlot;
+      this.dataSlots.add(result);
     }
+
+    return result;
+  }
+
+  protected <T> DataSlot<T> addDataSlot(MutableDataSlot<T> dataSlot) {
+    return this.addMutableDataSlot(dataSlot);
   }
 
   public void handleSyncDataSlotsPacket(SyncDataSlotsPacket packet) {
