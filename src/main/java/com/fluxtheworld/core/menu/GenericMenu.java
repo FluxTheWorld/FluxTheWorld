@@ -6,11 +6,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import com.fluxtheworld.core.network.sync.DataSlot;
-import com.fluxtheworld.core.network.sync.IntDataSlot;
+
 import com.fluxtheworld.core.network.sync.payload.DataSlotPayload;
 import com.fluxtheworld.core.network.sync.payload.IntDataSlotPayload;
-import com.fluxtheworld.core.network.packet.DataSlotUpdatePayload;
+import com.fluxtheworld.core.slot.DataSlot;
+import com.fluxtheworld.core.slot.DataSlotUpdatePayload;
+import com.fluxtheworld.core.slot.IntDataSlot;
+
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;

@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.network.sync;
+package com.fluxtheworld.core.slot;
 
 public interface DataSlot<T> {
   T get();

@@ -12,14 +12,13 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 
-@Mod(FTWMod.MOD_ID)
+@Mod(FTW.NAMESPACE)
 public class FTWMod {
 
-  public static final String MOD_ID = "fluxtheworld";
   public static final Logger LOGGER = LogUtils.getLogger();
 
   public FTWMod(IEventBus eventBus, Dist dist) {
-    CommonRegister register = dist.isClient() ? new ClientRegister(MOD_ID) : new ServerRegister(MOD_ID);
+    CommonRegister register = dist.isClient() ? new ClientRegister(FTW.NAMESPACE) : new ServerRegister(FTW.NAMESPACE);
     register.register(eventBus);
 
     AlloySmelterRegistry.register(register, dist);

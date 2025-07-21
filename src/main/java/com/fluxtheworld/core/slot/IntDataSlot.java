@@ -1,11 +1,11 @@
-package com.fluxtheworld.core.network.sync;
+package com.fluxtheworld.core.slot;
 
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-import com.fluxtheworld.core.network.sync.payload.IntDataSlotPayload;
+import com.fluxtheworld.core.slot.payload.IntDataSlotPayload;
 
-public abstract class IntDataSlot implements DataSlot<Integer>, MutableDataSlot<Integer> {
+public abstract class IntDataSlot implements MutableDataSlot<Integer> {
   private int lastValue;
 
   public static IntDataSlot standalone() {
