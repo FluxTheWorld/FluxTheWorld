@@ -1,7 +1,13 @@
 package com.fluxtheworld.core.slot;
 
-public interface DataSlot<T> {
-  T get();
+import com.fluxtheworld.core.slot.payload.DataSlotPayload;
 
-  boolean isDirty();
+public interface DataSlot<T> {
+  public T get();
+
+  public boolean checkAndClearUpdateFlag();
+
+  public DataSlotPayload encodePayload();
+
+  public void decodePayload(DataSlotPayload payload);
 }

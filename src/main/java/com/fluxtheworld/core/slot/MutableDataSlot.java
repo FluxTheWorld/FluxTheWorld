@@ -1,5 +1,7 @@
 package com.fluxtheworld.core.slot;
 
+import com.fluxtheworld.core.slot.payload.DataSlotPayload;
+
 public interface MutableDataSlot<T> extends DataSlot<T> {
-  void set(T value);
+  public void set(T value);
 }
