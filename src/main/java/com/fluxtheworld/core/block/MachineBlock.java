@@ -31,7 +31,7 @@ public class MachineBlock<BE extends MachineBlockEntity> extends GenericEntityBl
 
   public MachineBlock(Supplier<BlockEntityType<BE>> typeSupplier, Properties properties) {
     super(typeSupplier, properties);
-    this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+    this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, true));
   }
 
   @Override

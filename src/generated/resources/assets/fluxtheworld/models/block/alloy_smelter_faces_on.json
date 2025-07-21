@@ -1,0 +1,15 @@
+{
+  "children": {
+    "face_north": {
+      "parent": "fluxtheworld:block/face_north",
+      "render_type": "minecraft:cutout",
+      "textures": {
+        "face": "fluxtheworld:block/alloy_smelter_front_on"
+      }
+    }
+  },
+  "item_render_order": [
+    "face_north"
+  ],
+  "loader": "neoforge:composite"
+}
