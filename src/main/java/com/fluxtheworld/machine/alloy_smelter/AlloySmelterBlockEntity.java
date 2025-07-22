@@ -15,19 +15,21 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemStorageProvider {
 
-  public static final ItemStorageCapabilityProvider ITEMSTORAGE_PROVIDER = new ItemStorageCapabilityProvider();
+  public static final ItemStorageCapabilityProvider ITEM_STORAGE_PROVIDER = new ItemStorageCapabilityProvider();
 
   private ItemStorage itemStorage;
   private SideAccessConfig itemAccessConfig;
 
   public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
     super(AlloySmelterRegistry.BLOCK_ENTITY_TYPE.get(), worldPosition, blockState);
+    // TODO: Maybe it better to create MachineItemStorage and provide MachineBlockEntity to args
     this.itemStorage = new ItemStorage(
         ItemStorageLayout.builder()
             .slotCount(3)
             .setCanExtract(i -> i == 3)
             .setCanInsert(i -> i == 1 || i == 2)
-            .build());
+            .build(),
+        (slot) -> this.setChanged());
     this.itemAccessConfig = new SideAccessConfig();
   }
 

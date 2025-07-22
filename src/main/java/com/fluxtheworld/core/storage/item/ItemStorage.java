@@ -1,5 +1,7 @@
 package com.fluxtheworld.core.storage.item;
 
+import java.util.function.IntConsumer;
+
 import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
@@ -12,10 +14,16 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 public class ItemStorage extends ItemStackHandler {
 
   private final ItemStorageLayout layout;
+  private final @Nullable IntConsumer changeListener;
 
   public ItemStorage(ItemStorageLayout layout) {
+    this(layout, null);
+  }
+
+  public ItemStorage(ItemStorageLayout layout, @Nullable IntConsumer changeListener) {
     super(layout.getSlotCount());
     this.layout = layout;
+    this.changeListener = changeListener;
   }
 
   public final ItemStorageLayout getLayout() {
@@ -42,6 +50,15 @@ public class ItemStorage extends ItemStackHandler {
     }
 
     return null;
+  }
+
+  @Override
+  protected void onContentsChanged(int slot) {
+    super.onContentsChanged(slot);
+
+    if (this.changeListener != null) {
+      this.changeListener.accept(slot);
+    }
   }
 
   private static class Wrapper implements IItemHandler {

@@ -60,7 +60,7 @@ public abstract class GenericMenu extends AbstractContainerMenu {
       int index = entry.index();
 
       if (index < 0 || index > this.dataSlots.size()) {
-        FTWMod.LOGGER.warn("Attempted to access non-existent data slot at index {}.", index);
+        FTWMod.LOGGER.warn("Attempted to access non-existent data slot at index {}", index);
         continue;
       }
 
