@@ -6,6 +6,7 @@ import com.fluxtheworld.core.register.ClientRegister;
 import com.fluxtheworld.core.register.CommonRegister;
 import com.fluxtheworld.core.register.ServerRegister;
 import com.fluxtheworld.core.slot.SyncDataSlotsPacket;
+import com.fluxtheworld.internal.block.test.TestBlockRegistry;
 import com.fluxtheworld.machine.alloy_smelter.AlloySmelterRegistry;
 import com.mojang.logging.LogUtils;
 
@@ -24,6 +25,7 @@ public class FTWMod {
 
     SyncDataSlotsPacket.Handler.register(eventBus);
     AlloySmelterRegistry.register(register, dist);
+    TestBlockRegistry.register(register, dist);
   }
 
 }

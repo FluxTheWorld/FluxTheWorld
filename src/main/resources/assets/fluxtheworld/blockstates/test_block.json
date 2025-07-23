@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,lit=false": {
+      "model": "fluxtheworld:block/test_block",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "fluxtheworld:block/test_block_on",
+      "y": 90
+    },
+    "facing=north,lit=false": {
+      "model": "fluxtheworld:block/test_block"
+    },
+    "facing=north,lit=true": {
+      "model": "fluxtheworld:block/test_block_on"
+    },
+    "facing=south,lit=false": {
+      "model": "fluxtheworld:block/test_block",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "fluxtheworld:block/test_block_on",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "fluxtheworld:block/test_block",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "fluxtheworld:block/test_block_on",
+      "y": 270
+    }
+  }
+}

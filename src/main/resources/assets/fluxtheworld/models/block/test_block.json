@@ -1,0 +1,47 @@
+{
+	"parent": "block/block",
+	"render_type": "minecraft:cutout",
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"down": { "texture": "#down", "cullface": "down" },
+				"up": { "texture": "#up", "cullface": "up" },
+				"north": { "texture": "#north", "cullface": "north" },
+				"south": { "texture": "#south", "cullface": "south" },
+				"west": { "texture": "#west", "cullface": "west" },
+				"east": { "texture": "#east", "cullface": "east" }
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"down": { "texture": "#face_down", "cullface": "down" },
+				"up": { "texture": "#face_up", "cullface": "up" },
+				"north": { "texture": "#face_north", "cullface": "north" },
+				"south": { "texture": "#face_south", "cullface": "south" },
+				"west": { "texture": "#face_west", "cullface": "west" },
+				"east": { "texture": "#face_east", "cullface": "east" }
+			}
+		}
+	],
+	"textures": {
+		"particle": "fluxtheworld:block/test_particle",
+
+		"down": "fluxtheworld:block/test_down",
+		"up": "fluxtheworld:block/test_up",
+		"north": "fluxtheworld:block/test_north",
+		"south": "fluxtheworld:block/test_south",
+		"west": "fluxtheworld:block/test_west",
+		"east": "fluxtheworld:block/test_east",
+
+		"face_down": "fluxtheworld:block/test_face_down",
+		"face_up": "fluxtheworld:block/test_face_up",
+		"face_north": "fluxtheworld:block/test_face_north",
+		"face_south": "fluxtheworld:block/test_face_south",
+		"face_west": "fluxtheworld:block/test_face_west",
+		"face_east": "fluxtheworld:block/test_face_east"
+	}
+}
