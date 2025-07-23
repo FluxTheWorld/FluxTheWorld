@@ -4,6 +4,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Predicate;
 
+// TODO: Rename to SlotAccessConfig
+//       Also create SlotAccessMode or SlotAccessRule
 public class ItemStorageLayout {
   private final int slotCount;
   private final Predicate<Integer> canInsert;
