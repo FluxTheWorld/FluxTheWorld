@@ -3,7 +3,7 @@ package com.fluxtheworld.core.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.slot.DataSlot;
@@ -35,25 +35,6 @@ public abstract class GenericMenu extends AbstractContainerMenu {
   }
 
   // region Synchronization
-
-  protected <T> MutableDataSlot<T> addMutableDataSlot(MutableDataSlot<T> dataSlot) {
-    MutableDataSlot<T> result;
-
-    if (playerInventory.player instanceof LocalPlayer) {
-      result = new LocalDataSlotProxy<>(dataSlot, this.dataSlots.size(), this.containerId);
-      this.dataSlots.add(result);
-    }
-    else {
-      result = dataSlot;
-      this.dataSlots.add(result);
-    }
-
-    return result;
-  }
-
-  protected <T> DataSlot<T> addDataSlot(MutableDataSlot<T> dataSlot) {
-    return this.addMutableDataSlot(dataSlot);
-  }
 
   public void handleSyncDataSlotsPacket(SyncDataSlotsPacket packet) {
     for (ListEntry entry : packet.entries()) {
@@ -111,33 +92,33 @@ public abstract class GenericMenu extends AbstractContainerMenu {
 
   // endregion
 
-  // region Inventory Utilities
+  // region MenuLayout
 
-  protected Inventory getPlayerInventory() {
-    return playerInventory;
-  }
+  // TODO: Create generic interface for MenuLayout
+  //       MachineMenuLayout is implementation
+  protected void applyLayout(MachineMenuLayout<?> layout) {
+    for (Slot slot : layout.getSlots()) {
+      this.addSlot(slot);
+    }
 
-  protected void addPlayerInventory(int x, int y) {
-    addPlayerMainInventory(x, y);
-    addPlayerHotbarInventory(x, y + 58);
-  }
-
-  protected void addPlayerMainInventory(int xStart, int yStart) {
-    for (int y = 0; y < 3; y++) {
-      for (int x = 0; x < 9; x++) {
-        addSlot(createPlayerSlot(x + y * 9 + 9, xStart + x * 18, yStart + y * 18));
-      }
+    for (MutableDataSlot<?> slot : layout.getDataSlots()) {
+      this.addMutableDataSlot(slot);
     }
   }
 
-  protected void addPlayerHotbarInventory(int x, int y) {
-    for (int i = 0; i < 9; i++) {
-      addSlot(createPlayerSlot(i, x + i * 18, y));
-    }
-  }
+  protected <T> MutableDataSlot<T> addMutableDataSlot(MutableDataSlot<T> dataSlot) {
+    MutableDataSlot<T> result;
 
-  protected Slot createPlayerSlot(int slot, int x, int y) {
-    return new Slot(this.playerInventory, slot, x, y);
+    if (playerInventory.player instanceof LocalPlayer) {
+      result = new LocalDataSlotProxy<>(dataSlot, this.dataSlots.size(), this.containerId);
+      this.dataSlots.add(result);
+    }
+    else {
+      result = dataSlot;
+      this.dataSlots.add(result);
+    }
+
+    return result;
   }
 
   // endregion
