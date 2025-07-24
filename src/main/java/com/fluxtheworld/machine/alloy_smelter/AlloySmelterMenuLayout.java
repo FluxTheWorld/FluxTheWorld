@@ -1,9 +1,9 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
 import com.fluxtheworld.core.menu.MachineMenuLayout;
-import com.fluxtheworld.core.storage.item.ItemStorage;
 
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockEntity> {
 
@@ -13,7 +13,7 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
 
   @Override
   protected void init() {
-    ItemStorage storage = this.blockEntity.getItemStorage();
+    IItemHandler storage = this.blockEntity.getItemStorage().getForMenu();
 
     this.addItemSlot(storage, 0, 20, 36);
     this.addItemSlot(storage, 1, 40, 36);

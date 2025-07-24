@@ -4,12 +4,14 @@ import java.util.function.IntConsumer;
 
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ItemStorage extends ItemStackHandler {
@@ -119,11 +121,12 @@ public class ItemStorage extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-      return storage.isItemValid(slot, stack);
+      return this.slotAccess.canPipeInsert(slot) && storage.isItemValid(slot, stack);
     }
   }
 
-  private static class Menu implements IItemHandler {
+  // SlotItemHandler requires us to use IItemHandlerModifiable interface
+  private static class Menu implements IItemHandlerModifiable {
 
     private final ItemStorage storage;
     private final ItemSlotAccessConfig slotAccess;
@@ -168,7 +171,12 @@ public class ItemStorage extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-      return storage.isItemValid(slot, stack);
+      return this.slotAccess.canMenuInsert(slot) && storage.isItemValid(slot, stack);
+    }
+
+    @Override
+    public void setStackInSlot(int slot, ItemStack stack) {
+      this.storage.setStackInSlot(slot, stack);
     }
   }
 }
