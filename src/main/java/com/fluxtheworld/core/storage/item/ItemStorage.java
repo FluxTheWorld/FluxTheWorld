@@ -5,6 +5,7 @@ import java.util.function.IntConsumer;
 import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
+import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -13,45 +14,43 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ItemStorage extends ItemStackHandler {
 
-  private final ItemStorageLayout layout;
+  private final ItemSlotAccessConfig slotAccess;
   private final @Nullable IntConsumer changeListener;
 
-  public ItemStorage(ItemStorageLayout layout) {
-    this(layout, null);
+  public ItemStorage(ItemSlotAccessConfig slotAccess) {
+    this(slotAccess, null);
   }
 
-  public ItemStorage(ItemStorageLayout layout, @Nullable IntConsumer changeListener) {
-    super(layout.getSlotCount());
-    this.layout = layout;
+  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable IntConsumer changeListener) {
+    super(slotAccess.getSlotCount());
+    this.slotAccess = slotAccess;
     this.changeListener = changeListener;
-  }
-
-  public final ItemStorageLayout getLayout() {
-    return layout;
-  }
-
-  @Override
-  public boolean isItemValid(int slot, ItemStack stack) {
-    return layout.isItemValid(slot, stack);
   }
 
   @Override
   public int getSlotLimit(int slot) {
-    return layout.getStackLimit(slot);
+    return this.slotAccess.getStackLimit(slot);
   }
 
-  // TODO: getForPipe
-  //       add extra method getForMenu
-  public @Nullable IItemHandler getForSide(SideAccessConfig config, @Nullable Direction side) {
+  @Override
+  public boolean isItemValid(int slot, ItemStack stack) {
+    return this.slotAccess.isItemValid(slot, stack);
+  }
+
+  public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
     if (side == null) {
-      return new Wrapper(this, config, null);
+      return new Pipe(this, slotAccess, sideAccess, null);
     }
 
-    if (config.getMode(side).canConnect()) {
-      return new Wrapper(this, config, side);
+    if (sideAccess.getMode(side).canConnect()) {
+      return new Pipe(this, slotAccess, sideAccess, side);
     }
 
     return null;
+  }
+
+  public IItemHandler getForMenu() {
+    return new Menu(this, slotAccess);
   }
 
   @Override
@@ -63,62 +62,113 @@ public class ItemStorage extends ItemStackHandler {
     }
   }
 
-  private static class Wrapper implements IItemHandler {
+  private static class Pipe implements IItemHandler {
 
-    private final ItemStorage origin;
-    private final SideAccessConfig config;
+    private final ItemStorage storage;
+    private final ItemSlotAccessConfig slotAccess;
+    private final SideAccessConfig sideAccess;
     private final @Nullable Direction side;
 
-    public Wrapper(ItemStorage origin, SideAccessConfig config, @Nullable Direction side) {
-      this.origin = origin;
+    public Pipe(ItemStorage storage, ItemSlotAccessConfig slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
+      this.storage = storage;
       this.side = side;
-      this.config = config;
+      this.sideAccess = sideAccess;
+      this.slotAccess = slotAccess;
     }
 
     @Override
     public int getSlots() {
-      return origin.getSlots();
+      return storage.getSlots();
     }
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-      return origin.getStackInSlot(slot);
+      return storage.getStackInSlot(slot);
     }
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!origin.getLayout().canInsert(slot)) {
+      if (!this.slotAccess.canPipeInsert(slot)) {
         return stack;
       }
 
-      if (side != null && !config.getMode(side).canInput()) {
+      if (side != null && !sideAccess.getMode(side).canInput()) {
         return stack;
       }
 
-      return origin.insertItem(slot, stack, simulate);
+      return storage.insertItem(slot, stack, simulate);
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!origin.getLayout().canExtract(slot)) {
+      if (!this.slotAccess.canPipeExtract(slot)) {
         return ItemStack.EMPTY;
       }
 
-      if (side != null && !config.getMode(side).canOutput()) {
+      if (side != null && !sideAccess.getMode(side).canOutput()) {
         return ItemStack.EMPTY;
       }
 
-      return origin.extractItem(slot, amount, simulate);
+      return storage.extractItem(slot, amount, simulate);
     }
 
     @Override
     public int getSlotLimit(int slot) {
-      return origin.getSlotLimit(slot);
+      return storage.getSlotLimit(slot);
     }
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-      return origin.isItemValid(slot, stack);
+      return storage.isItemValid(slot, stack);
+    }
+  }
+
+  private static class Menu implements IItemHandler {
+
+    private final ItemStorage storage;
+    private final ItemSlotAccessConfig slotAccess;
+
+    public Menu(ItemStorage storage, ItemSlotAccessConfig slotAccess) {
+      this.storage = storage;
+      this.slotAccess = slotAccess;
+    }
+
+    @Override
+    public int getSlots() {
+      return storage.getSlots();
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+      return storage.getStackInSlot(slot);
+    }
+
+    @Override
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+      if (!this.slotAccess.canMenuInsert(slot)) {
+        return stack;
+      }
+
+      return storage.insertItem(slot, stack, simulate);
+    }
+
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+      if (!this.slotAccess.canMenuExtract(slot)) {
+        return ItemStack.EMPTY;
+      }
+
+      return storage.extractItem(slot, amount, simulate);
+    }
+
+    @Override
+    public int getSlotLimit(int slot) {
+      return storage.getSlotLimit(slot);
+    }
+
+    @Override
+    public boolean isItemValid(int slot, ItemStack stack) {
+      return storage.isItemValid(slot, stack);
     }
   }
 }

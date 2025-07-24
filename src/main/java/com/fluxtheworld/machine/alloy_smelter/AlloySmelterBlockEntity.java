@@ -3,9 +3,9 @@ package com.fluxtheworld.machine.alloy_smelter;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider;
-import com.fluxtheworld.core.storage.item.ItemStorageLayout;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
+import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +24,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
     super(AlloySmelterRegistry.BLOCK_ENTITY_TYPE.get(), worldPosition, blockState);
     // TODO: Maybe it better to create MachineItemStorage and provide MachineBlockEntity to args
     this.itemStorage = new ItemStorage(
-        ItemStorageLayout.builder()
+        ItemSlotAccessConfig.builder()
             .slotCount(3)
             .setCanExtract(i -> i == 3)
             .setCanInsert(i -> i == 1 || i == 2)

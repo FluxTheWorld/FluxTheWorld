@@ -4,10 +4,10 @@ import net.minecraft.util.StringRepresentable;
 
 public enum SideAccessMode implements StringRepresentable {
   // @formatter:off
-  NONE(0, "none", true, true, false, true),
-  PUSH(1, "push", false, true, true, true),
-  PULL(2, "pull", true, false, true, true),
-  DISABLED(4,"disable", false, false, false, false);
+  NONE("none", true, true, false, true),
+  PUSH("push", false, true, true, true),
+  PULL("pull", true, false, true, true),
+  DISABLED("disable", false, false, false, false);
   // @formatter:on
 
   public static SideAccessMode next(SideAccessMode mode) {
@@ -24,15 +24,13 @@ public enum SideAccessMode implements StringRepresentable {
     }
   }
 
-  private final int id;
   private final String name;
   private final boolean input;
   private final boolean output;
   private final boolean force;
   private final boolean canConnect;
 
-  SideAccessMode(int id, String name, boolean input, boolean output, boolean force, boolean canConnect) {
-    this.id = id;
+  SideAccessMode(String name, boolean input, boolean output, boolean force, boolean canConnect) {
     this.name = name;
     this.input = input;
     this.output = output;
