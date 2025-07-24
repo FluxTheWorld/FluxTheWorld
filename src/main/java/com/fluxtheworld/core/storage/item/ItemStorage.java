@@ -40,6 +40,8 @@ public class ItemStorage extends ItemStackHandler {
     return layout.getStackLimit(slot);
   }
 
+  // TODO: getForPipe
+  //       add extra method getForMenu
   public @Nullable IItemHandler getForSide(SideAccessConfig config, @Nullable Direction side) {
     if (side == null) {
       return new Wrapper(this, config, null);
