@@ -8,6 +8,7 @@ import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.gui.component.GenericWidget;
 import com.fluxtheworld.core.gui.component.ItemSlotWidget;
 import com.fluxtheworld.core.slot.MutableDataSlot;
+import com.fluxtheworld.core.storage.item.ItemStorage;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -70,8 +71,8 @@ public abstract class MachineMenuLayout<T extends MachineBlockEntity> {
     return slot;
   }
 
-  protected SlotItemHandler addItemSlot(IItemHandler storage, int index, int x, int y) {
-    SlotItemHandler slot = new SlotItemHandler(storage, index, x, y);
+  protected SlotItemHandler addItemSlot(ItemStorage storage, String name, int x, int y) {
+    SlotItemHandler slot = new SlotItemHandler(storage.getForMenu(), storage.getSlotIndex(name), x, y);
     this.addSlot(slot);
     if (isClientSide) {
       this.addItemSlotWidget(x, y);

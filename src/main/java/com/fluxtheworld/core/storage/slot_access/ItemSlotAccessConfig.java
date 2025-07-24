@@ -1,15 +1,19 @@
 package com.fluxtheworld.core.storage.slot_access;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.world.item.ItemStack;
 
 public class ItemSlotAccessConfig {
   private final List<SlotAccessRule<ItemStack>> rules;
+  private final Map<String, Integer> namedSlots;
 
-  private ItemSlotAccessConfig(List<SlotAccessRule<ItemStack>> rules) {
+  private ItemSlotAccessConfig(List<SlotAccessRule<ItemStack>> rules, Map<String, Integer> namedSlots) {
     this.rules = rules;
+    this.namedSlots = namedSlots;
   }
 
   public int getSlotCount() {
@@ -52,28 +56,35 @@ public class ItemSlotAccessConfig {
     return new Builder();
   }
 
+  public int getSlotIndex(String name) {
+    return namedSlots.getOrDefault(name, -1);
+  }
+
   public static class Builder {
     private final List<SlotAccessRule<ItemStack>> rules;
+    private final Map<String, Integer> namedSlots;
 
     public Builder() {
       this.rules = new ArrayList<>();
+      this.namedSlots = new HashMap<>();
     }
 
-    public Builder slot(SlotAccessRule<ItemStack> rule) {
+    public Builder slot(String name, SlotAccessRule<ItemStack> rule) {
       this.rules.add(rule);
+      this.namedSlots.put(name, this.rules.size() - 1);
       return this;
     }
 
-    public Builder inputSlot() {
-      return this.slot(SlotAccessRule.<ItemStack>builder().menuCanInsert().menuCanExtract().pipeCanInsert().build());
+    public Builder inputSlot(String name) {
+      return this.slot(name, SlotAccessRule.<ItemStack>builder().menuCanInsert().menuCanExtract().pipeCanInsert().build());
     }
 
-    public Builder outputSlot() {
-      return this.slot(SlotAccessRule.<ItemStack>builder().menuCanExtract().pipeCanExtract().build());
+    public Builder outputSlot(String name) {
+      return this.slot(name, SlotAccessRule.<ItemStack>builder().menuCanExtract().pipeCanExtract().build());
     }
 
     public ItemSlotAccessConfig build() {
-      return new ItemSlotAccessConfig(this.rules);
+      return new ItemSlotAccessConfig(this.rules, this.namedSlots);
     }
   }
 }

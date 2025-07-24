@@ -4,7 +4,6 @@ import java.util.function.IntConsumer;
 
 import javax.annotation.Nullable;
 
-import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 
@@ -37,6 +36,10 @@ public class ItemStorage extends ItemStackHandler {
   @Override
   public boolean isItemValid(int slot, ItemStack stack) {
     return this.slotAccess.isItemValid(slot, stack);
+  }
+
+  public int getSlotIndex(String name) {
+    return this.slotAccess.getSlotIndex(name);
   }
 
   public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {

@@ -24,7 +24,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
   public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
     super(AlloySmelterRegistry.BLOCK_ENTITY_TYPE.get(), worldPosition, blockState);
     this.itemStorage = new MachineItemStorage(this,
-        ItemSlotAccessConfig.builder().inputSlot().inputSlot().outputSlot().build());
+        ItemSlotAccessConfig.builder().inputSlot("input1").inputSlot("input2").outputSlot("output").build());
     this.itemAccessConfig = new SideAccessConfig();
   }
 
