@@ -19,7 +19,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, int energyCost, float experienceReward)
+public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, int processingTime, int energyUsage, float experienceReward)
     implements MachineRecipe<AlloySmelterRecipe.Input> {
 
   @Override
@@ -70,7 +70,8 @@ public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, 
         .group(
             SizedIngredient.FLAT_CODEC.listOf().fieldOf("input").forGetter(AlloySmelterRecipe::input),
             ItemStack.CODEC.fieldOf("output").forGetter(AlloySmelterRecipe::output),
-            Codec.INT.fieldOf("energy_cost").forGetter(AlloySmelterRecipe::energyCost),
+            Codec.INT.fieldOf("processing_time").forGetter(AlloySmelterRecipe::processingTime),
+            Codec.INT.fieldOf("energy_usage").forGetter(AlloySmelterRecipe::energyUsage),
             Codec.FLOAT.fieldOf("experience_reward").forGetter(AlloySmelterRecipe::experienceReward))
         .apply(builder, AlloySmelterRecipe::new));
 
@@ -78,7 +79,8 @@ public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, 
         .composite(
             SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), AlloySmelterRecipe::input,
             ItemStack.STREAM_CODEC, AlloySmelterRecipe::output,
-            ByteBufCodecs.INT, AlloySmelterRecipe::energyCost,
+            ByteBufCodecs.INT, AlloySmelterRecipe::processingTime,
+            ByteBufCodecs.INT, AlloySmelterRecipe::energyUsage,
             ByteBufCodecs.FLOAT, AlloySmelterRecipe::experienceReward,
             AlloySmelterRecipe::new);
 

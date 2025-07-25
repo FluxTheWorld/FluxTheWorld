@@ -1,7 +1,10 @@
 package com.fluxtheworld.core.task;
 
+import com.fluxtheworld.FTWMod;
+
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
+import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface GenericTask extends INBTSerializable<CompoundTag> {
@@ -10,6 +13,7 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
     @Override
     public void tick() {
       // no-op
+      FTWMod.LOGGER.info("GenericTask {} tick", EffectiveSide.get().name());
     }
 
     @Override

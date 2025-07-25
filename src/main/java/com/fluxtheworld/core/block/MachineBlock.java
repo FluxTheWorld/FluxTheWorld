@@ -4,7 +4,9 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
+import com.fluxtheworld.machine.alloy_smelter.AlloySmelterRegistry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

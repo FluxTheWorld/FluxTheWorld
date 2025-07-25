@@ -68,7 +68,6 @@ public class BoxLayout {
     }
 
     public void invalidate() {
-      FTWMod.LOGGER.info("{} {} {}", this.initialX, this.settings.x, this.widget.getX());
       this.widget.setX(initialX + settings.x);
       this.widget.setY(initialY + settings.y);
     }

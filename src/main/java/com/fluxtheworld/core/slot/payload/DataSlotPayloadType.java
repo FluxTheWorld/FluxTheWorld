@@ -6,6 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 public enum DataSlotPayloadType {
   // @formatter:off
   INT(IntDataSlotPayload.STREAM_CODEC),
+  FLOAT(FloatDataSlotPayload.STREAM_CODEC),
   ;
   // @formatter:on
 

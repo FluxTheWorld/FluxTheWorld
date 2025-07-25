@@ -3,6 +3,7 @@ package com.fluxtheworld.core.slot;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.slot.payload.DataSlotPayload;
 import com.fluxtheworld.core.slot.payload.IntDataSlotPayload;
 
@@ -35,6 +36,20 @@ public abstract class IntDataSlot implements MutableDataSlot<Integer> {
       @Override
       public void set(Integer value) {
         setter.accept(value);
+      }
+    };
+  }
+
+  public static IntDataSlot readOnly(IntSupplier getter) {
+    return new IntDataSlot() {
+      @Override
+      public Integer get() {
+        return getter.getAsInt();
+      }
+
+      @Override
+      public void set(Integer value) {
+        FTWMod.LOGGER.warn("Attempted to set a value on a read-only IntDataSlot. This operation is not permitted.");
       }
     };
   }

@@ -48,9 +48,11 @@ public abstract class MenuLayout {
   public abstract void init();
 
   public void initClient() {
+    Preconditions.ensureSide(LogicalSide.CLIENT);
   }
 
   public void initServer() {
+    Preconditions.ensureSide(LogicalSide.SERVER);
   }
 
   protected <T extends Slot> T addSlot(T slot) {
@@ -67,7 +69,7 @@ public abstract class MenuLayout {
     return slot;
   }
 
-  public <T> MutableDataSlot<T> addDataSlot(MutableDataSlot<T> dataSlot) {
+  public <T extends MutableDataSlot<?>> T addDataSlot(T dataSlot) {
     this.dataSlots.add(dataSlot);
     return dataSlot;
   }

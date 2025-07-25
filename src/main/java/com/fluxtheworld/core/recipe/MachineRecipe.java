@@ -6,10 +6,11 @@ import net.minecraft.world.item.crafting.RecipeInput;
 
 public interface MachineRecipe<T extends RecipeInput> extends GenericRecipe<T> {
 
-  public default int energyCost(@Nullable T input) {
-    return this.energyCost();
+  public default int energyUsage(@Nullable T input) {
+    return this.energyUsage();
   }
 
-  public int energyCost();
+  public int energyUsage();
 
+  public int processingTime();
 }
