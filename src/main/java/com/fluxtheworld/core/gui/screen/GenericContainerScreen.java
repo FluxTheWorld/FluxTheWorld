@@ -7,6 +7,7 @@ import com.fluxtheworld.core.gui.component.BoxLayout;
 import com.fluxtheworld.core.gui.component.GenericWidget;
 import com.fluxtheworld.core.menu.GenericMenu;
 import com.fluxtheworld.core.menu.MachineMenuLayout;
+import com.fluxtheworld.core.menu.MenuLayout;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -32,7 +33,7 @@ public abstract class GenericContainerScreen<T extends GenericMenu> extends Abst
 
   // region MenuLayout
 
-  protected void applyLayout(MachineMenuLayout<?> layout) {
+  protected void applyLayout(MenuLayout layout) {
     BoxLayout box = this.box;
     if (box == null) {
       box = new BoxLayout(0, 0);

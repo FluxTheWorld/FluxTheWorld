@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public abstract class BlockEntityMenu<BE extends BlockEntity> extends GenericMenu {
 
-  private final BE blockEntity;
+  protected final BE blockEntity;
 
   // client
   @SafeVarargs
@@ -34,10 +34,6 @@ public abstract class BlockEntityMenu<BE extends BlockEntity> extends GenericMen
       BE blockEntity) {
     super(menuType, containerId, playerInventory);
     this.blockEntity = blockEntity;
-  }
-
-  public BE getBlockEntity() {
-    return blockEntity;
   }
 
   @Override

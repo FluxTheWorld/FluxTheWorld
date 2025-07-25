@@ -11,9 +11,4 @@ public class AlloySmelterScreen extends MachineScreen<AlloySmelterMenu> {
     super(menu, playerInventory, title);
   }
 
-  @Override
-  protected void init() {
-    super.init();
-    this.applyLayout(this.menu.layout);
-  }
 }

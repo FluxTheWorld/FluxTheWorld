@@ -12,7 +12,7 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
   }
 
   @Override
-  protected void init() {
+  public void init() {
     ItemStorage storage = this.blockEntity.getItemStorage();
 
     this.addItemSlot(storage, "input1", 20, 36);

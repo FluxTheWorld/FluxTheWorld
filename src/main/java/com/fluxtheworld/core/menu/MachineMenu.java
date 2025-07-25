@@ -12,7 +12,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public abstract class MachineMenu<BE extends MachineBlockEntity> extends BlockEntityMenu<BE> {
+public abstract class MachineMenu<BE extends MachineBlockEntity, ML extends MachineMenuLayout<BE>>
+    extends BlockEntityMenu<BE> implements MenuLayoutProvider<ML> {
+
+  private @Nullable ML menuLayout;
 
   // client
   @SafeVarargs
@@ -23,6 +26,7 @@ public abstract class MachineMenu<BE extends MachineBlockEntity> extends BlockEn
       RegistryFriendlyByteBuf buf,
       BlockEntityType<? extends BE>... blockEntityTypes) {
     super(menuType, containerId, playerInventory, buf, blockEntityTypes);
+    this.applyLayout(this.getClientMenuLayout());
   }
 
   // server
@@ -32,6 +36,7 @@ public abstract class MachineMenu<BE extends MachineBlockEntity> extends BlockEn
       Inventory playerInventory,
       BE blockEntity) {
     super(menuType, containerId, playerInventory, blockEntity);
+    this.applyLayout(this.getServerMenuLayout());
   }
 
   // Copy-paste from:
@@ -106,7 +111,8 @@ public abstract class MachineMenu<BE extends MachineBlockEntity> extends BlockEn
         // If the raw stack has completely moved out of the slot, set the slot to the
         // empty stack
         quickMovedSlot.set(ItemStack.EMPTY);
-      } else {
+      }
+      else {
         // Otherwise, notify the slot that that the stack count has changed
         quickMovedSlot.setChanged();
       }
@@ -128,4 +134,31 @@ public abstract class MachineMenu<BE extends MachineBlockEntity> extends BlockEn
     return quickMovedStack; // Return the slot stack
   }
 
+  // region MenuLayout
+
+  protected abstract ML createMenuLayout();
+
+  @Override
+  public ML getClientMenuLayout() {
+    if (this.menuLayout == null) {
+      this.menuLayout = this.createMenuLayout();
+      this.menuLayout.init();
+      this.menuLayout.initClient();
+    }
+
+    return this.menuLayout;
+  }
+
+  @Override
+  public ML getServerMenuLayout() {
+    if (this.menuLayout == null) {
+      this.menuLayout = this.createMenuLayout();
+      this.menuLayout.init();
+      this.menuLayout.initServer();
+    }
+
+    return this.menuLayout;
+  }
+
+  // endregion
 }

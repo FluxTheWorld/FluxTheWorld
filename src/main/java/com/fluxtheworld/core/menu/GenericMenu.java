@@ -25,7 +25,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public abstract class GenericMenu extends AbstractContainerMenu {
 
-  private final Inventory playerInventory;
+  protected final Inventory playerInventory;
   private final List<DataSlot<?>> dataSlots;
 
   protected GenericMenu(@Nullable MenuType<?> menuType, int containerId, Inventory playerInventory) {
@@ -94,9 +94,7 @@ public abstract class GenericMenu extends AbstractContainerMenu {
 
   // region MenuLayout
 
-  // TODO: Create generic interface for MenuLayout
-  //       MachineMenuLayout is implementation
-  protected void applyLayout(MachineMenuLayout<?> layout) {
+  protected void applyLayout(MenuLayout layout) {
     for (Slot slot : layout.getSlots()) {
       this.addSlot(slot);
     }
