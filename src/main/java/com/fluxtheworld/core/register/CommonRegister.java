@@ -10,7 +10,7 @@ import com.fluxtheworld.core.register.recipe_type.RecipeTypeRegister;
 
 import net.neoforged.bus.api.IEventBus;
 
-public class CommonRegister {
+public abstract class CommonRegister {
 
   public final BlockRegister blocks;
   public final BlockEntityTypeRegister blockEntityTypes;
@@ -20,7 +20,7 @@ public class CommonRegister {
   public final RecipeSerializerRegister recipeSerializers;
   public final DatagenRegister datagen;
 
-  public CommonRegister(String namespace) {
+  protected CommonRegister(String namespace) {
     this.blocks = new BlockRegister(namespace);
     this.blockEntityTypes = new BlockEntityTypeRegister(namespace);
     this.items = new ItemRegister(namespace);
