@@ -2,6 +2,7 @@ package com.fluxtheworld.core.menu;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.fluxtheworld.core.Preconditions;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,6 +12,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.fml.LogicalSide;
 
 public abstract class MachineMenu<BE extends MachineBlockEntity, ML extends MachineMenuLayout<BE>>
     extends BlockEntityMenu<BE> implements MenuLayoutProvider<ML> {
@@ -140,6 +142,8 @@ public abstract class MachineMenu<BE extends MachineBlockEntity, ML extends Mach
 
   @Override
   public ML getClientMenuLayout() {
+    Preconditions.ensureSide(LogicalSide.CLIENT);
+
     if (this.menuLayout == null) {
       this.menuLayout = this.createMenuLayout();
       this.menuLayout.init();
@@ -151,6 +155,8 @@ public abstract class MachineMenu<BE extends MachineBlockEntity, ML extends Mach
 
   @Override
   public ML getServerMenuLayout() {
+    Preconditions.ensureSide(LogicalSide.SERVER);
+
     if (this.menuLayout == null) {
       this.menuLayout = this.createMenuLayout();
       this.menuLayout.init();

@@ -29,6 +29,12 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
   }
 
   @Override
+  public void serverTick() {
+    super.serverTick();
+    // TODO: Add recipe checking
+  }
+
+  @Override
   public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
     return new AlloySmelterMenu(containerId, playerInventory, this);
   }

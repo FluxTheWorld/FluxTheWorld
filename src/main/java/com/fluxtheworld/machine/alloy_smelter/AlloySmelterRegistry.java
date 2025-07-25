@@ -10,11 +10,14 @@ import com.fluxtheworld.core.register.block_entity_type.DeferredBlockEntityType;
 import com.fluxtheworld.core.register.container_screen.ContainerScreenHolder;
 import com.fluxtheworld.core.register.item.DeferredItem;
 import com.fluxtheworld.core.register.menu_type.DeferredMenuType;
+import com.fluxtheworld.core.register.recipe_serializer.DeferredRecipeSerializer;
+import com.fluxtheworld.core.register.recipe_type.DeferredRecipeType;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.api.distmarker.Dist;
@@ -31,6 +34,8 @@ public class AlloySmelterRegistry {
   public static DeferredItem<BlockItem> ITEM;
   public static DeferredBlockEntityType<BlockEntityType<AlloySmelterBlockEntity>> BLOCK_ENTITY_TYPE;
   public static DeferredMenuType<MenuType<AlloySmelterMenu>> MENU_TYPE;
+  public static DeferredRecipeType<RecipeType<AlloySmelterRecipe>> RECIPE_TYPE;
+  public static DeferredRecipeSerializer<AlloySmelterRecipe.Serializer> RECIPE_SERIALIZER;
 
   public static void register(CommonRegister register, Dist dist) {
     BLOCK = register.blocks.register("alloy_smelter", () -> {
@@ -48,6 +53,10 @@ public class AlloySmelterRegistry {
     MENU_TYPE = register.menuTypes.register("alloy_smelter", () -> {
       return IMenuTypeExtension.create(AlloySmelterMenu::new);
     });
+
+    RECIPE_TYPE = register.recipeTypes.register("alloy_smelter", RecipeType::simple);
+
+    RECIPE_SERIALIZER = register.recipeSerializers.register("alloy_smelter", AlloySmelterRecipe.Serializer::new);
 
     register.datagen.registerBlockStateProvider((p) -> {
       p.models().getBuilder("alloy_smelter_faces")
