@@ -57,7 +57,11 @@ public class ItemSlotAccessConfig {
   }
 
   public int getSlotIndex(String name) {
-    return namedSlots.getOrDefault(name, -1);
+    final var index = namedSlots.getOrDefault(name, -1);
+    if (index == -1) {
+      throw new IllegalArgumentException("Slot with name: '" + name + "' does not exist.");
+    }
+    return index;
   }
 
   public static class Builder {

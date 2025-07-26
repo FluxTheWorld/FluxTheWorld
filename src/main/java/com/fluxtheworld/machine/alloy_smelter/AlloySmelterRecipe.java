@@ -1,40 +1,27 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import java.util.List;
-
 import com.fluxtheworld.core.recipe.MachineRecipe;
-import com.fluxtheworld.core.recipe.OutputStack;
+import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, int processingTime, int energyUsage, float experienceReward)
-    implements MachineRecipe<AlloySmelterRecipe.Input> {
+public record AlloySmelterRecipe(SizedIngredient input0, SizedIngredient input1, ItemStack output, int processingTime, int energyUsage,
+    float experienceReward)
+    implements MachineRecipe {
 
-  @Override
-  public boolean matches(Input input, Level level) {
-    throw new UnsupportedOperationException("Unimplemented method 'matches'");
-  }
-
-  @Override
-  public List<OutputStack> craft(Input input, RegistryAccess registry) {
-    return null;
-  }
-
-  @Override
-  public List<OutputStack> getResultStacks(RegistryAccess registry) {
-    return List.of(OutputStack.of(this.output));
+  public boolean matches(ItemStorage storage) {
+    final var input0 = storage.getStackInSlot("input0");
+    final var input1 = storage.getStackInSlot("input1");
+    return (this.input0.test(input0) && this.input1.test(input1)) || (this.input0.test(input1) && this.input1.test(input0));
   }
 
   @Override
@@ -47,28 +34,11 @@ public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, 
     return AlloySmelterRegistry.RECIPE_TYPE.get();
   }
 
-  public record Input(List<ItemStack> inputs) implements RecipeInput {
-
-    @Override
-    public ItemStack getItem(int slot) {
-      if (slot >= inputs.size()) {
-        throw new IllegalArgumentException("No item for index " + slot);
-      }
-
-      return inputs.get(slot);
-    }
-
-    @Override
-    public int size() {
-      return inputs.size();
-    }
-
-  }
-
   public static class Serializer implements RecipeSerializer<AlloySmelterRecipe> {
     public static final MapCodec<AlloySmelterRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> builder
         .group(
-            SizedIngredient.FLAT_CODEC.listOf().fieldOf("input").forGetter(AlloySmelterRecipe::input),
+            SizedIngredient.FLAT_CODEC.fieldOf("input0").forGetter(AlloySmelterRecipe::input0),
+            SizedIngredient.FLAT_CODEC.fieldOf("input1").forGetter(AlloySmelterRecipe::input1),
             ItemStack.CODEC.fieldOf("output").forGetter(AlloySmelterRecipe::output),
             Codec.INT.fieldOf("processing_time").forGetter(AlloySmelterRecipe::processingTime),
             Codec.INT.fieldOf("energy_usage").forGetter(AlloySmelterRecipe::energyUsage),
@@ -77,7 +47,8 @@ public record AlloySmelterRecipe(List<SizedIngredient> input, ItemStack output, 
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AlloySmelterRecipe> STREAM_CODEC = StreamCodec
         .composite(
-            SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), AlloySmelterRecipe::input,
+            SizedIngredient.STREAM_CODEC, AlloySmelterRecipe::input0,
+            SizedIngredient.STREAM_CODEC, AlloySmelterRecipe::input1,
             ItemStack.STREAM_CODEC, AlloySmelterRecipe::output,
             ByteBufCodecs.INT, AlloySmelterRecipe::processingTime,
             ByteBufCodecs.INT, AlloySmelterRecipe::energyUsage,

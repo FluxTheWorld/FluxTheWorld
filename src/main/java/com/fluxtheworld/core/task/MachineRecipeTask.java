@@ -1,36 +1,44 @@
 package com.fluxtheworld.core.task;
 
-import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.recipe.MachineRecipe;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.level.Level;
 
-public abstract class MachineRecipeTask<I extends RecipeInput> implements GenericTask {
+public abstract class MachineRecipeTask<BE extends MachineBlockEntity, R extends MachineRecipe> implements GenericTask {
 
-  protected ResourceLocation recipeId;
-  protected float progress;
+  private final BE blockEntity;
 
-  protected Supplier<Level> levelSupplier;
-  private @Nullable RecipeHolder<MachineRecipe<I>> recipeHolder;
+  private ResourceLocation recipeId;
+  private float progress;
+  private boolean aborted;
 
-  // TODO: Maybe move level instance into tick method
-  protected MachineRecipeTask(ResourceLocation recipeId, Supplier<Level> levelSupplier) {
+  private @Nullable RecipeHolder<R> recipeHolder;
+
+  protected MachineRecipeTask(BE blockEntity, ResourceLocation recipeId) {
+    this.blockEntity = blockEntity;
     this.recipeId = recipeId;
     this.progress = 0;
-    this.levelSupplier = levelSupplier;
+    this.aborted = false;
   }
 
   @Override
   public float getProgress() {
+    if (this.aborted) {
+      return 0;
+    }
+
     return Math.clamp(this.progress / this.getRecipe().processingTime(), 0, 1);
+  }
+
+  @Override
+  public boolean isActive() {
+    return !this.aborted && !this.isCompleted();
   }
 
   @Override
@@ -38,14 +46,27 @@ public abstract class MachineRecipeTask<I extends RecipeInput> implements Generi
     return this.progress >= this.getRecipe().processingTime();
   }
 
+  protected void advance() {
+    this.progress++;
+  }
+
+  protected void abort() {
+    this.progress = 0;
+    this.aborted = true;
+  }
+
+  protected BE getBlockEntity() {
+    return this.blockEntity;
+  }
+
   // TODO: Maybe pass Level instance as argument
   @SuppressWarnings({ "null", "unchecked", "java:S3655" })
-  protected MachineRecipe<I> getRecipe() {
+  protected R getRecipe() {
     final var holder = this.recipeHolder;
 
     if (holder == null || !this.recipeId.equals(holder.id())) {
-      final var loaded = this.levelSupplier.get().getRecipeManager().byKey(this.recipeId).get();
-      this.recipeHolder = (RecipeHolder<MachineRecipe<I>>) loaded;
+      final var loaded = this.blockEntity.getLevel().getRecipeManager().byKey(this.recipeId).get();
+      this.recipeHolder = (RecipeHolder<R>) loaded;
     }
 
     return this.recipeHolder.value();

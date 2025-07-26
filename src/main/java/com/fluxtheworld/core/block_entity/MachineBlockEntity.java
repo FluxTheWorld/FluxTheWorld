@@ -44,12 +44,11 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
     if (this instanceof TaskProvider provider) {
       GenericTask task = provider.getCurrentTask();
 
-      if (!task.isCompleted()) {
+      if (task.isActive()) {
         task.tick();
-        this.setChanged();
       }
 
-      if (task.isCompleted() && createNextTaskDelay.tickAndReset()) {
+      if (!task.isActive() && createNextTaskDelay.tickAndReset()) {
         provider.createNextTask();
       }
     }
@@ -74,7 +73,7 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
       tag.put("ItemStorage", itemStorage.serializeNBT(registries));
     }
 
-    if (this instanceof TaskProvider provider) {
+    if (this instanceof TaskProvider<?> provider) {
       GenericTask currentTask = provider.getCurrentTask();
       if (currentTask != GenericTask.NONE) {
         tag.put("CurrentTask", currentTask.serializeNBT(registries));
@@ -92,7 +91,7 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
       itemStorage.deserializeNBT(registries, tag.getCompound("ItemStorage"));
     }
 
-    if (this instanceof TaskProvider provider && tag.contains("CurrentTask")) {
+    if (this instanceof TaskProvider<?> provider && tag.contains("CurrentTask")) {
       GenericTask currentTask = provider.createEmptyTask();
       currentTask.deserializeNBT(registries, tag.getCompound("CurrentTask"));
     }

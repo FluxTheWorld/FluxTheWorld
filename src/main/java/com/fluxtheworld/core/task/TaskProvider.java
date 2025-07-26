@@ -1,11 +1,13 @@
 package com.fluxtheworld.core.task;
 
-public interface TaskProvider {
+import com.fluxtheworld.core.recipe.MachineRecipe;
 
-  public GenericTask getCurrentTask();
+public interface TaskProvider<T extends GenericTask> {
 
-  public GenericTask createNextTask();
+  public T getCurrentTask();
 
-  public GenericTask createEmptyTask();
+  public T createNextTask();
+
+  public T createEmptyTask();
 
 }

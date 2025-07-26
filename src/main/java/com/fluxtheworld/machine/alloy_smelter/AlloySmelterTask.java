@@ -1,21 +1,33 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import java.util.function.Supplier;
-
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.task.MachineRecipeTask;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 
-public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterRecipe.Input> {
+public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity, AlloySmelterRecipe> {
 
-  public AlloySmelterTask(ResourceLocation recipeId, Supplier<Level> levelSupplier) {
-    super(recipeId, levelSupplier);
+  public AlloySmelterTask(AlloySmelterBlockEntity blockEntity, ResourceLocation recipeId) {
+    super(blockEntity, recipeId);
   }
 
   @Override
   public void tick() {
-    this.progress += 1;
+    final var blockEntity = this.getBlockEntity();
+    final var storage = blockEntity.getItemStorage();
+    final var recipe = this.getRecipe();
+
+    if (!recipe.matches(storage) || !storage.insertItem("output", recipe.output(), true).isEmpty()) {
+      this.abort();
+      return;
+    }
+
+    this.advance();
+    // TODO: Consume energy
+
+    if (this.isCompleted()) {
+      storage.insertItem("output", recipe.output().copy(), false);
+    }
   }
 
 }

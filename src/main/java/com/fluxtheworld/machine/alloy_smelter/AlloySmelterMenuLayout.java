@@ -19,8 +19,8 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
   public void init() {
     ItemStorage storage = this.blockEntity.getItemStorage();
 
-    this.addItemSlot(storage, "input1", 32, 36);
-    this.addItemSlot(storage, "input2", 54, 36);
+    this.addItemSlot(storage, "input0", 32, 36);
+    this.addItemSlot(storage, "input1", 54, 36);
     this.addItemSlot(storage, "output", 112, 36);
 
     this.addPlayerInventory(8, 84);

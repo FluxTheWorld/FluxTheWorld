@@ -13,6 +13,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
+// TODO: Create CompositeItemStorage, that contains tagged slots
 public class ItemStorage extends ItemStackHandler {
 
   private final ItemSlotAccessConfig slotAccess;
@@ -40,6 +41,18 @@ public class ItemStorage extends ItemStackHandler {
 
   public int getSlotIndex(String name) {
     return this.slotAccess.getSlotIndex(name);
+  }
+
+  public ItemStack getStackInSlot(String name) {
+    return this.getStackInSlot(this.getSlotIndex(name));
+  }
+
+  public ItemStack insertItem(String name, ItemStack stack, boolean simulate) {
+    return this.insertItem(this.getSlotIndex(name), stack, simulate);
+  }
+
+  public ItemStack extractItem(String name, int amount, boolean simulate) {
+    return this.extractItem(this.getSlotIndex(name), amount, simulate);
   }
 
   public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {

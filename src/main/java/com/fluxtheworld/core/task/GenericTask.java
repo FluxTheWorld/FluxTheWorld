@@ -18,6 +18,11 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
     }
 
     @Override
+    public boolean isActive() {
+      return false;
+    }
+
+    @Override
     public boolean isCompleted() {
       return true;
     }
@@ -37,6 +42,8 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
   void tick();
 
   float getProgress();
+
+  boolean isActive();
 
   boolean isCompleted();
 }

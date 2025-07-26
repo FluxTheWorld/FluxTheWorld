@@ -28,7 +28,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
 
   public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
     super(AlloySmelterRegistry.BLOCK_ENTITY_TYPE.get(), worldPosition, blockState);
-    this.itemSlotAccess = ItemSlotAccessConfig.builder().inputSlot("input1").inputSlot("input2").outputSlot("output").build();
+    this.itemSlotAccess = ItemSlotAccessConfig.builder().inputSlot("input0").inputSlot("input1").outputSlot("output").build();
     this.itemStorage = new MachineItemStorage(this, this.itemSlotAccess);
     this.sideAccess = new SideAccessConfig();
     this.task = GenericTask.NONE;
@@ -56,14 +56,14 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
 
   @Override
   public GenericTask createNextTask() {
-    this.task = new AlloySmelterTask(FTW.loc("alloy_smelter/example"), this::getLevel);
+    this.task = new AlloySmelterTask(this, FTW.loc("alloy_smelter/example"));
     return this.task;
   }
 
   @Override
   @SuppressWarnings({ "null", "java:S4449" })
   public GenericTask createEmptyTask() {
-    this.task = new AlloySmelterTask(null, this::getLevel);
+    this.task = new AlloySmelterTask(this, null);
     return this.task;
   }
 
