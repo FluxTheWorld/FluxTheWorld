@@ -2,6 +2,7 @@ package com.fluxtheworld.machine.alloy_smelter;
 
 import com.fluxtheworld.core.recipe.MachineRecipe;
 import com.fluxtheworld.core.storage.item.ItemStorage;
+import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -19,9 +20,10 @@ public record AlloySmelterRecipe(SizedIngredient input0, SizedIngredient input1,
     implements MachineRecipe {
 
   public boolean matches(ItemStorage storage) {
-    final var input0 = storage.getStackInSlot("input0");
-    final var input1 = storage.getStackInSlot("input1");
-    return (this.input0.test(input0) && this.input1.test(input1)) || (this.input0.test(input1) && this.input1.test(input0));
+    final var input0 = this.input0.count() == storage.extractIngredient(SlotAccessTag.INPUT, this.input0, true).getCount();
+    final var input1 = this.input1.count() == storage.extractIngredient(SlotAccessTag.INPUT, this.input1, true).getCount();
+
+    return input0 && input1;
   }
 
   @Override

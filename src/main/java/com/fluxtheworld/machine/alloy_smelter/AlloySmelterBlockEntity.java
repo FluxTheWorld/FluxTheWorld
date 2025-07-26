@@ -1,6 +1,5 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.FTW;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider;
@@ -12,9 +11,11 @@ import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.animal.Panda.Gene;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemStorageProvider, TaskProvider {
@@ -56,7 +57,15 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
 
   @Override
   public GenericTask createNextTask() {
-    this.task = new AlloySmelterTask(this, FTW.loc("alloy_smelter/example"));
+    this.task = GenericTask.NONE;
+
+    final var recipes = this.level.getRecipeManager().getAllRecipesFor(AlloySmelterRegistry.RECIPE_TYPE.get());
+    for (RecipeHolder<AlloySmelterRecipe> holder : recipes) {
+      if (holder.value().matches(this.getItemStorage())) {
+        this.task = new AlloySmelterTask(this, holder.id());
+      }
+    }
+    
     return this.task;
   }
 

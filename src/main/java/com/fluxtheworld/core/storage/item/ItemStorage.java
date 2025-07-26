@@ -4,16 +4,18 @@ import java.util.function.IntConsumer;
 
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
+import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-// TODO: Create CompositeItemStorage, that contains tagged slots
 public class ItemStorage extends ItemStackHandler {
 
   private final ItemSlotAccessConfig slotAccess;
@@ -53,6 +55,61 @@ public class ItemStorage extends ItemStackHandler {
 
   public ItemStack extractItem(String name, int amount, boolean simulate) {
     return this.extractItem(this.getSlotIndex(name), amount, simulate);
+  }
+
+  public ItemStack insertItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
+    var remaining = stack.copy();
+
+    for (int index : this.slotAccess.getTaggedSlots(tag)) {
+      if (remaining.isEmpty()) {
+        return ItemStack.EMPTY;
+      }
+
+      remaining = super.insertItem(index, remaining, simulate);
+    }
+
+    return remaining;
+  }
+
+  public ItemStack extractItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
+    var extracted = stack.copyWithCount(0);
+
+    for (int index : this.slotAccess.getTaggedSlots(tag)) {
+      if (extracted.getCount() == stack.getCount()) {
+        break;
+      }
+
+      if (!this.getStackInSlot(index).is(stack.getItem())) {
+        continue;
+      }
+
+      var found = super.extractItem(index, stack.getCount() - extracted.getCount(), simulate);
+      extracted.grow(found.getCount());
+    }
+
+    return extracted;
+  }
+
+  /**
+   * Extracts an item stack matching the given ingredient from the storage.
+   * This method first checks if the required item can be extracted in the specified quantity
+   * in a single operation. It ensures that only one specific type of item is extracted,
+   * even if the ingredient can match multiple suitable item types.
+   *
+   * @param tag The slot access tag to filter which slots to consider.
+   * @param ingredient The sized ingredient representing the item(s) to extract.
+   * @param simulate If true, the extraction is simulated and no items are removed from storage.
+   * @return The extracted ItemStack, or ItemStack.EMPTY if no matching item could be extracted.
+   */
+  public ItemStack extractIngredient(SlotAccessTag tag, SizedIngredient ingredient, boolean simulate) {
+    for (ItemStack stack : ingredient.getItems()) {
+      ItemStack found = this.extractItem(tag, stack, true);
+      if (found.getCount() == stack.getCount()) {
+        return simulate ? found : this.extractItem(tag, stack, simulate);
+      }
+    }
+
+    return ItemStack.EMPTY;
   }
 
   public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {

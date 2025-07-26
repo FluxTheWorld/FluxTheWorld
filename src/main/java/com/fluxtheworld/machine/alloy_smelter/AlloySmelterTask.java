@@ -1,6 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.FTWMod;
+import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
 import com.fluxtheworld.core.task.MachineRecipeTask;
 
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +17,7 @@ public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity,
     final var storage = blockEntity.getItemStorage();
     final var recipe = this.getRecipe();
 
-    if (!recipe.matches(storage) || !storage.insertItem("output", recipe.output(), true).isEmpty()) {
+    if (!recipe.matches(storage) || !storage.insertItem(SlotAccessTag.OUTPUT, recipe.output(), true).isEmpty()) {
       this.abort();
       return;
     }
@@ -26,7 +26,9 @@ public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity,
     // TODO: Consume energy
 
     if (this.isCompleted()) {
-      storage.insertItem("output", recipe.output().copy(), false);
+      storage.extractIngredient(SlotAccessTag.INPUT, recipe.input0(), false);
+      storage.extractIngredient(SlotAccessTag.INPUT, recipe.input1(), false);
+      storage.insertItem(SlotAccessTag.OUTPUT, recipe.output(), false);
     }
   }
 
