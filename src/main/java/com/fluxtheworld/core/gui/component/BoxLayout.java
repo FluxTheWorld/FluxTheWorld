@@ -3,17 +3,15 @@ package com.fluxtheworld.core.gui.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fluxtheworld.FTWMod;
-
 import net.minecraft.client.gui.components.AbstractWidget;
 
 public class BoxLayout {
   private final List<ChildWrapper> children;
   private final Settings settings;
 
-  public BoxLayout(int X, int Y) {
+  public BoxLayout(int x, int y) {
     this.children = new ArrayList<>();
-    this.settings = new Settings(X, Y);
+    this.settings = new Settings(x, y);
   }
 
   public void setX(int x) {
@@ -24,14 +22,16 @@ public class BoxLayout {
     this.settings.y = y;
   }
 
-  public void addChild(AbstractWidget child) {
+  public BoxLayout addChild(AbstractWidget child) {
     this.children.add(new ChildWrapper(child, this.settings));
+    return this;
   }
 
-  public <T extends AbstractWidget> void addChildren(List<T> children) {
-    for(AbstractWidget child: children) {
+  public <T extends AbstractWidget> BoxLayout addChildren(List<T> children) {
+    for (AbstractWidget child : children) {
       this.addChild(child);
     }
+    return this;
   }
 
   public void invalidate() {

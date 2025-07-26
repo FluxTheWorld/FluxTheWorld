@@ -1,10 +1,7 @@
 package com.fluxtheworld.core.block_entity;
 
-import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 
-import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
 import com.fluxtheworld.core.task.GenericTask;

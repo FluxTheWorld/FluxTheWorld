@@ -37,6 +37,7 @@ public class AlloySmelterRegistry {
   public static DeferredRecipeType<RecipeType<AlloySmelterRecipe>> RECIPE_TYPE;
   public static DeferredRecipeSerializer<AlloySmelterRecipe.Serializer> RECIPE_SERIALIZER;
 
+  @SuppressWarnings("null")
   public static void register(CommonRegister register, Dist dist) {
     BLOCK = register.blocks.register("alloy_smelter", () -> {
       return new AlloySmelterBlock(BlockBehaviour.Properties.of());

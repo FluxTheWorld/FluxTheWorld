@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.recipe.MachineRecipe;
 
 import net.minecraft.core.HolderLookup.Provider;
@@ -22,6 +21,7 @@ public abstract class MachineRecipeTask<I extends RecipeInput> implements Generi
   protected Supplier<Level> levelSupplier;
   private @Nullable RecipeHolder<MachineRecipe<I>> recipeHolder;
 
+  // TODO: Maybe move level instance into tick method
   protected MachineRecipeTask(ResourceLocation recipeId, Supplier<Level> levelSupplier) {
     this.recipeId = recipeId;
     this.progress = 0;
@@ -38,6 +38,8 @@ public abstract class MachineRecipeTask<I extends RecipeInput> implements Generi
     return this.progress >= this.getRecipe().processingTime();
   }
 
+  // TODO: Maybe pass Level instance as argument
+  @SuppressWarnings({ "null", "unchecked", "java:S3655" })
   protected MachineRecipe<I> getRecipe() {
     final var holder = this.recipeHolder;
 

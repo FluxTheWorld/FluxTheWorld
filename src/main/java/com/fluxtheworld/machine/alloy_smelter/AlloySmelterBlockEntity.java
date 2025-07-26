@@ -2,7 +2,6 @@ package com.fluxtheworld.machine.alloy_smelter;
 
 import com.fluxtheworld.FTW;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
-import com.fluxtheworld.core.recipe.MachineRecipe;
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
@@ -16,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemStorageProvider, TaskProvider {
@@ -63,6 +61,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
   }
 
   @Override
+  @SuppressWarnings({ "null", "java:S4449" })
   public GenericTask createEmptyTask() {
     this.task = new AlloySmelterTask(null, this::getLevel);
     return this.task;

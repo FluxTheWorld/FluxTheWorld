@@ -2,11 +2,8 @@ package com.fluxtheworld.core.register.datagen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -30,7 +27,6 @@ public class DatagenRegister {
       DataGenerator generator = event.getGenerator();
       PackOutput output = generator.getPackOutput();
       ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-      CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
       for (DatagenHolder holder : holders) {
         boolean run = (event.includeClient() && holder.side.isClient()) || (event.includeServer() && holder.side.isServer());
@@ -44,13 +40,12 @@ public class DatagenRegister {
   }
 
   public void registerBlockStateProvider(Consumer<BlockStateProvider> generate) {
-    this.holders.add(new DatagenHolder(LogicalSide.CLIENT, (PackOutput output, ExistingFileHelper existingFileHelper) -> {
-      return new BlockStateProvider(output, this.namespace, existingFileHelper) {
-        @Override
-        protected void registerStatesAndModels() {
-          generate.accept(this);
-        }
-      };
-    }));
+    this.holders.add(new DatagenHolder(LogicalSide.CLIENT,
+        (PackOutput output, ExistingFileHelper existingFileHelper) -> new BlockStateProvider(output, this.namespace, existingFileHelper) {
+          @Override
+          protected void registerStatesAndModels() {
+            generate.accept(this);
+          }
+        }));
   }
 }

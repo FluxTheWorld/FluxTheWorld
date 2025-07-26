@@ -6,7 +6,6 @@ import com.fluxtheworld.FTW;
 import com.fluxtheworld.core.gui.component.BoxLayout;
 import com.fluxtheworld.core.gui.component.GenericWidget;
 import com.fluxtheworld.core.menu.GenericMenu;
-import com.fluxtheworld.core.menu.MachineMenuLayout;
 import com.fluxtheworld.core.menu.MenuLayout;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,13 +32,10 @@ public abstract class GenericContainerScreen<T extends GenericMenu> extends Abst
 
   // region MenuLayout
 
+  @SuppressWarnings("null")
   protected void applyLayout(MenuLayout layout) {
-    BoxLayout box = this.box;
-    if (box == null) {
-      box = new BoxLayout(0, 0);
-      box.addChildren(layout.getWidgets());
-      box.addChildren(layout.getRenderables());
-      this.box = box;
+    if (this.box == null) {
+      this.box = new BoxLayout(0, 0).addChildren(layout.getWidgets()).addChildren(layout.getRenderables());
     }
 
     for (GenericWidget widget : layout.getWidgets()) {
@@ -50,9 +46,9 @@ public abstract class GenericContainerScreen<T extends GenericMenu> extends Abst
       this.addRenderableOnly(widget);
     }
 
-    box.setX(this.leftPos);
-    box.setY(this.topPos);
-    box.invalidate();
+    this.box.setX(this.leftPos);
+    this.box.setY(this.topPos);
+    this.box.invalidate();
   }
 
   // endregion
