@@ -1,7 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import com.fluxtheworld.FTW;
-import com.fluxtheworld.core.gui.component.ProgressWidget;
+import com.fluxtheworld.core.gui.component.ProgressBarWidget;
 import com.fluxtheworld.core.menu.MachineMenuLayout;
 import com.fluxtheworld.core.slot.FloatDataSlot;
 import com.fluxtheworld.core.storage.item.ItemStorage;
@@ -20,9 +19,9 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
   public void init() {
     ItemStorage storage = this.blockEntity.getItemStorage();
 
-    this.addItemSlot(storage, "input1", 20, 36);
-    this.addItemSlot(storage, "input2", 40, 36);
-    this.addItemSlot(storage, "output", 60, 36);
+    this.addItemSlot(storage, "input1", 32, 36);
+    this.addItemSlot(storage, "input2", 54, 36);
+    this.addItemSlot(storage, "output", 112, 36);
 
     this.addPlayerInventory(8, 84);
   }
@@ -32,7 +31,7 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
     super.initClient();
 
     this.progress = this.addDataSlot(FloatDataSlot.standalone());
-    this.addRenderable(ProgressWidget.leftRight(80, 36, 32, 64, FTW.loc("progress"), () -> this.progress.get()));
+    this.addRenderable(ProgressBarWidget.arrowRight(80, 36, () -> this.progress.get()));
   }
 
   @Override
