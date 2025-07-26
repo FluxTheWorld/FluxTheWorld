@@ -1,5 +1,7 @@
 package com.fluxtheworld.core.task;
 
+import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 
 import com.fluxtheworld.FTWMod;
@@ -14,56 +16,50 @@ import net.minecraft.world.level.Level;
 
 public abstract class MachineRecipeTask<I extends RecipeInput> implements GenericTask {
 
-  protected Level level;
-  protected RecipeHolder<MachineRecipe<I>> recipeHolder;
+  protected ResourceLocation recipeId;
   protected float progress;
 
-  protected MachineRecipeTask(Level level, @Nullable RecipeHolder<MachineRecipe<I>> recipeHolder) {
-    this.level = level;
-    this.recipeHolder = recipeHolder;
+  protected Supplier<Level> levelSupplier;
+  private @Nullable RecipeHolder<MachineRecipe<I>> recipeHolder;
+
+  protected MachineRecipeTask(ResourceLocation recipeId, Supplier<Level> levelSupplier) {
+    this.recipeId = recipeId;
     this.progress = 0;
+    this.levelSupplier = levelSupplier;
   }
 
   @Override
   public float getProgress() {
-    if (this.recipeHolder == null) {
-      return 0;
-    }
-
     return Math.clamp(this.progress / this.getRecipe().processingTime(), 0, 1);
   }
 
   @Override
   public boolean isCompleted() {
-    FTWMod.LOGGER.info("+100500 isCompleted {}", this.recipeHolder);
-    if (this.recipeHolder == null) {
-      return true;
-    }
-
-    return this.progress >= this.recipeHolder.value().processingTime();
+    return this.progress >= this.getRecipe().processingTime();
   }
 
   protected MachineRecipe<I> getRecipe() {
+    final var holder = this.recipeHolder;
+
+    if (holder == null || !this.recipeId.equals(holder.id())) {
+      final var loaded = this.levelSupplier.get().getRecipeManager().byKey(this.recipeId).get();
+      this.recipeHolder = (RecipeHolder<MachineRecipe<I>>) loaded;
+    }
+
     return this.recipeHolder.value();
   }
 
   @Override
   public CompoundTag serializeNBT(Provider provider) {
     CompoundTag nbt = new CompoundTag();
-    nbt.putString("RecipeHolderId", this.recipeHolder.id().toString());
+    nbt.putString("RecipeId", this.recipeId.toString());
     nbt.putFloat("Progress", this.progress);
     return nbt;
   }
 
   @Override
-  @SuppressWarnings({ "unchecked", "java:S3655" })
   public void deserializeNBT(Provider provider, CompoundTag nbt) {
-    FTWMod.LOGGER.info("+100500 deserializeNBT {}", nbt);
-
-    String id = nbt.getString("Id");
-    ResourceLocation loc = ResourceLocation.parse(id);
-    this.recipeHolder = (RecipeHolder<MachineRecipe<I>>) this.level.getRecipeManager().byKey(loc).get();
-
+    this.recipeId = ResourceLocation.parse(nbt.getString("RecipeId"));
     this.progress = nbt.getFloat("Progress");
   }
 }

@@ -1,9 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
-import javax.annotation.Nullable;
-
 import com.fluxtheworld.FTW;
-import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.recipe.MachineRecipe;
 import com.fluxtheworld.core.storage.item.ItemStorage;
@@ -16,7 +13,6 @@ import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -62,15 +58,13 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
 
   @Override
   public GenericTask createNextTask() {
-    ResourceLocation loc = FTW.loc("alloy_smelter/example");
-    this.task = new AlloySmelterTask(this.level,
-        (RecipeHolder<MachineRecipe<AlloySmelterRecipe.Input>>) this.level.getRecipeManager().byKey(loc).get());
+    this.task = new AlloySmelterTask(FTW.loc("alloy_smelter/example"), this::getLevel);
     return this.task;
   }
 
   @Override
   public GenericTask createEmptyTask() {
-    this.task = new AlloySmelterTask(this.level, null);
+    this.task = new AlloySmelterTask(null, this::getLevel);
     return this.task;
   }
 

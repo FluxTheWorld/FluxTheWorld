@@ -13,7 +13,6 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
     @Override
     public void tick() {
       // no-op
-      FTWMod.LOGGER.info("GenericTask {} tick", EffectiveSide.get().name());
     }
 
     @Override
