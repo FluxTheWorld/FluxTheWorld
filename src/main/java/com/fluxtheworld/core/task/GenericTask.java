@@ -39,6 +39,8 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
 
   };
 
+  // TODO: Maybe add state: Idle/Active/Error/Canceled/Successful etc
+
   void tick();
 
   float getProgress();

@@ -105,7 +105,7 @@ public class ItemStorage extends ItemStackHandler {
     for (ItemStack stack : ingredient.getItems()) {
       ItemStack found = this.extractItem(tag, stack, true);
       if (found.getCount() == stack.getCount()) {
-        return simulate ? found : this.extractItem(tag, stack, simulate);
+        return simulate ? found : this.extractItem(tag, stack, false);
       }
     }
 

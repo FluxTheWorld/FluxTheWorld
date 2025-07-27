@@ -11,7 +11,6 @@ import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.animal.Panda.Gene;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -59,7 +58,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
   public GenericTask createNextTask() {
     this.task = GenericTask.NONE;
 
-    final var recipes = this.level.getRecipeManager().getAllRecipesFor(AlloySmelterRegistry.RECIPE_TYPE.get());
+    final var recipes = this.getLevel().getRecipeManager().getAllRecipesFor(AlloySmelterRegistry.RECIPE_TYPE.get());
     for (RecipeHolder<AlloySmelterRecipe> holder : recipes) {
       if (holder.value().matches(this.getItemStorage())) {
         this.task = new AlloySmelterTask(this, holder.id());
