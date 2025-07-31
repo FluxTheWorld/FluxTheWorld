@@ -15,6 +15,7 @@ public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity,
   public void tick() {
     final var blockEntity = this.getBlockEntity();
     final var storage = blockEntity.getItemStorage();
+    final var energy = blockEntity.getEnergyStorage();
     final var recipe = this.getRecipe();
 
     if (!recipe.matches(storage) || !storage.insertItem(SlotAccessTag.OUTPUT, recipe.output(), true).isEmpty()) {
@@ -22,8 +23,12 @@ public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity,
       return;
     }
 
-    this.advance();
-    // TODO: Consume energy
+    final var extracted = energy.extractEnergy(recipe.energyUsage(), false);
+    if (extracted == recipe.energyUsage()) {
+      this.advance();
+    } else {
+      // TODO: Set machine not enough energy error
+    }
 
     if (this.isCompleted()) {
       storage.extractIngredient(SlotAccessTag.INPUT, recipe.input0(), false);

@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
+import com.fluxtheworld.core.storage.energy.EnergyStorage;
+import com.fluxtheworld.core.storage.energy.EnergyStorageCapabilityProvider.EnergyStorageProvider;
 import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
 import com.fluxtheworld.core.util.CountdownTimer;
@@ -73,6 +75,11 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
       tag.put("ItemStorage", itemStorage.serializeNBT(registries));
     }
 
+    if (this instanceof EnergyStorageProvider provider) {
+      EnergyStorage energyStorage = provider.getEnergyStorage();
+      tag.put("EnergyStorage", energyStorage.serializeNBT(registries));
+    }
+
     if (this instanceof TaskProvider provider) {
       GenericTask currentTask = provider.getCurrentTask();
       if (currentTask != GenericTask.NONE) {
@@ -91,12 +98,17 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
       itemStorage.deserializeNBT(registries, tag.getCompound("ItemStorage"));
     }
 
+    if (this instanceof EnergyStorageProvider provider) {
+      EnergyStorage energyStorage = provider.getEnergyStorage();
+      energyStorage.deserializeNBT(registries, tag.getCompound("EnergyStorage"));
+    }
+
     if (this instanceof TaskProvider provider && tag.contains("CurrentTask")) {
       GenericTask currentTask = provider.createEmptyTask();
       currentTask.deserializeNBT(registries, tag.getCompound("CurrentTask"));
     }
 
   }
-  
+
   //
 }

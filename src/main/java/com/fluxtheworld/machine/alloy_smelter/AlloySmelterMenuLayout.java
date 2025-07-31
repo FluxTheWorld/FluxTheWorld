@@ -1,5 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
+import com.fluxtheworld.core.gui.component.EnergyBarWidget;
 import com.fluxtheworld.core.gui.component.ProgressBarWidget;
 import com.fluxtheworld.core.menu.MachineMenuLayout;
 import com.fluxtheworld.core.slot.FloatDataSlot;
@@ -29,6 +30,8 @@ public class AlloySmelterMenuLayout extends MachineMenuLayout<AlloySmelterBlockE
   @Override
   public void initClient() {
     super.initClient();
+
+    this.addRenderable(EnergyBarWidget.defaultSize(8, 14, () -> 0.5f));
 
     this.progress = this.addDataSlot(FloatDataSlot.standalone());
     this.addRenderable(ProgressBarWidget.arrowRight(80, 36, () -> this.progress.get()));

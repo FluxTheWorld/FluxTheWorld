@@ -4,7 +4,6 @@ import java.util.function.IntConsumer;
 
 import javax.annotation.Nullable;
 
-import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;

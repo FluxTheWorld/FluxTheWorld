@@ -4,6 +4,8 @@ import com.fluxtheworld.core.block_entity.MachineBlockEntity;
 import com.fluxtheworld.core.storage.item.ItemStorage;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider;
 import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
+import com.fluxtheworld.core.storage.energy.EnergyStorage;
+import com.fluxtheworld.core.storage.energy.EnergyStorageCapabilityProvider.EnergyStorageProvider;
 import com.fluxtheworld.core.storage.item.MachineItemStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
@@ -17,13 +19,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemStorageProvider, TaskProvider {
+public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemStorageProvider, EnergyStorageProvider, TaskProvider {
 
   public static final ItemStorageCapabilityProvider ITEM_STORAGE_PROVIDER = new ItemStorageCapabilityProvider();
 
   private final ItemStorage itemStorage;
   private final ItemSlotAccessConfig itemSlotAccess;
   private final SideAccessConfig sideAccess;
+  private final EnergyStorage energyStorage;
   private GenericTask task;
 
   public AlloySmelterBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -31,6 +34,7 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
     this.itemSlotAccess = ItemSlotAccessConfig.builder().inputSlot("input0").inputSlot("input1").outputSlot("output").build();
     this.itemStorage = new MachineItemStorage(this, this.itemSlotAccess);
     this.sideAccess = new SideAccessConfig();
+    this.energyStorage = new EnergyStorage(128_000);
     this.task = GenericTask.NONE;
   }
 
@@ -50,21 +54,27 @@ public class AlloySmelterBlockEntity extends MachineBlockEntity implements ItemS
   }
 
   @Override
+  public EnergyStorage getEnergyStorage() {
+    return this.energyStorage;
+  }
+
+  @Override
   public GenericTask getCurrentTask() {
     return this.task;
   }
 
   @Override
+  @SuppressWarnings("null")
   public GenericTask createNextTask() {
     this.task = GenericTask.NONE;
 
-    final var recipes = this.getLevel().getRecipeManager().getAllRecipesFor(AlloySmelterRegistry.RECIPE_TYPE.get());
+    final var recipes = this.level.getRecipeManager().getAllRecipesFor(AlloySmelterRegistry.RECIPE_TYPE.get());
     for (RecipeHolder<AlloySmelterRecipe> holder : recipes) {
       if (holder.value().matches(this.getItemStorage())) {
         this.task = new AlloySmelterTask(this, holder.id());
       }
     }
-    
+
     return this.task;
   }
 
