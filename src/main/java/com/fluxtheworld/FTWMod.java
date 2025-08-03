@@ -1,5 +1,6 @@
 package com.fluxtheworld;
 
+import com.fluxtheworld.internal.block.ore.OreBlockRegistry;
 import org.slf4j.Logger;
 
 import com.fluxtheworld.core.register.ClientRegister;
@@ -26,6 +27,7 @@ public class FTWMod {
     SyncDataSlotsPacket.Handler.register(eventBus);
     AlloySmelterRegistry.register(register, dist);
     TestBlockRegistry.register(register, dist);
+    OreBlockRegistry.register(register, dist);
   }
 
 }
