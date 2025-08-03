@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "fluxtheworld:block/depleted_iron_ore"
+  }
+}
