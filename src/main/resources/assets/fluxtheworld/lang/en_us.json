@@ -2,5 +2,8 @@
 	"block.fluxtheworld.alloy_smelter": "Alloy Smelter",
 	"block.fluxtheworld.iron_ore": "Iron Ore",
 	"block.fluxtheworld.dense_iron_ore": "Dense Iron Ore",
-	"block.fluxtheworld.depleted_iron_ore": "Depleted Iron Ore"
+	"block.fluxtheworld.depleted_iron_ore": "Depleted Iron Ore",
+	"item.fluxtheworld.raw_iron": "Raw Iron",
+	"item.fluxtheworld.iron_dust": "Iron Dust",
+	"item.fluxtheworld.iron_ingot": "Iron Ingot"
 }

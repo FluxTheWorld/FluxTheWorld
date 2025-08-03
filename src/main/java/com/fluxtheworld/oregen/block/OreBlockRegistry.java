@@ -1,4 +1,4 @@
-package com.fluxtheworld.internal.block.ore;
+package com.fluxtheworld.oregen.block;
 
 import com.fluxtheworld.core.register.CommonRegister;
 import com.fluxtheworld.core.register.block.DeferredBlock;

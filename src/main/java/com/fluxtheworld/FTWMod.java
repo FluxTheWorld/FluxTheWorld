@@ -1,6 +1,7 @@
 package com.fluxtheworld;
 
-import com.fluxtheworld.internal.block.ore.OreBlockRegistry;
+import com.fluxtheworld.oregen.block.OreBlockRegistry;
+import com.fluxtheworld.oregen.item.OreItemRegistry;
 import org.slf4j.Logger;
 
 import com.fluxtheworld.core.register.ClientRegister;
@@ -28,6 +29,7 @@ public class FTWMod {
     AlloySmelterRegistry.register(register, dist);
     TestBlockRegistry.register(register, dist);
     OreBlockRegistry.register(register, dist);
+    OreItemRegistry.register(register, dist);
   }
 
 }
