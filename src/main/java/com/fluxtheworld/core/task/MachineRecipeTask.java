@@ -15,44 +15,47 @@ public abstract class MachineRecipeTask<BE extends MachineBlockEntity, R extends
   private final BE blockEntity;
 
   private ResourceLocation recipeId;
-  private float progress;
-  private boolean aborted;
-
   private @Nullable RecipeHolder<R> recipeHolder;
+
+  private float progress;
+  private TaskState state;
 
   protected MachineRecipeTask(BE blockEntity, ResourceLocation recipeId) {
     this.blockEntity = blockEntity;
     this.recipeId = recipeId;
     this.progress = 0;
-    this.aborted = false;
+    this.state = new TaskState.Pending(null);
+  }
+
+  @Override
+  public final void tick() {
+    if (!(this.state instanceof TaskState.Active)) {
+      return;
+    }
+
+    if (this.getRecipe().processingTime() > this.progress) {
+      this.state = this.doWork();
+      if (state instanceof TaskState.Active) {
+        this.progress += 1;
+      }
+    }
+    else {
+      this.state = this.attemptComplete();
+    }
   }
 
   @Override
   public float getProgress() {
-    if (this.aborted) {
-      return 0;
-    }
-
     return Math.clamp(this.progress / this.getRecipe().processingTime(), 0, 1);
   }
 
   @Override
-  public boolean isActive() {
-    return !this.aborted && !this.isCompleted();
+  public TaskState getState() {
+    return this.state;
   }
 
-  @Override
-  public boolean isCompleted() {
-    return this.progress >= this.getRecipe().processingTime();
-  }
-
-  protected void advance() {
-    this.progress++;
-  }
-
-  protected void abort() {
-    this.progress = 0;
-    this.aborted = true;
+  protected void abort(@Nullable TaskIssue cause) {
+    this.state = new TaskState.Aborted(cause);
   }
 
   protected BE getBlockEntity() {
@@ -74,15 +77,45 @@ public abstract class MachineRecipeTask<BE extends MachineBlockEntity, R extends
 
   @Override
   public CompoundTag serializeNBT(Provider provider) {
-    CompoundTag nbt = new CompoundTag();
-    nbt.putString("RecipeId", this.recipeId.toString());
-    nbt.putFloat("Progress", this.progress);
-    return nbt;
+    CompoundTag tag = new CompoundTag();
+    tag.putString("RecipeId", this.recipeId.toString());
+    tag.putFloat("Progress", this.progress);
+    tag.putBoolean("Completed", this.state instanceof TaskState.Completed);
+    return tag;
   }
 
   @Override
-  public void deserializeNBT(Provider provider, CompoundTag nbt) {
-    this.recipeId = ResourceLocation.parse(nbt.getString("RecipeId"));
-    this.progress = nbt.getFloat("Progress");
+  public void deserializeNBT(Provider provider, CompoundTag tag) {
+    this.recipeId = ResourceLocation.parse(tag.getString("RecipeId"));
+    this.progress = tag.getFloat("Progress");
+    this.state = tag.getBoolean("Completed") ? TaskState.Completed : new TaskState.Pending(null);
   }
+
+  /**
+   * Invalidates the current task. This method should be called by the block entity when its dependencies
+   * (e.g., inventory, internal state) change, as the task might no longer be valid after such changes.
+   */
+  public final void invalidate() {
+    this.state = this.invalidateState();
+  }
+
+  /**
+   * Attempts to complete the task. This method performs side-effects such as consuming input items
+   * and producing output results.
+   *
+   * @return A {@link TaskState.Completed} state if all side-effects are performed successfully,
+   *         otherwise a {@link TaskState.Pending} or {@link TaskState.Aborted} state.
+   *         If the task returns to a pending state, it can be re-attempted on the next tick after
+   *         {@link #invalidate()} is called.
+   */
+  protected abstract TaskState attemptComplete();
+
+  /**
+   * Performs one tick of work for the machine recipe task.
+   *
+   * @return {@link TaskState.Active} if work was performed successfully.
+   */
+  protected abstract TaskState doWork();
+
+  protected abstract TaskState invalidateState();
 }

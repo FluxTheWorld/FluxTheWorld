@@ -8,6 +8,7 @@ import com.fluxtheworld.core.storage.energy.EnergyStorage;
 import com.fluxtheworld.core.storage.energy.EnergyStorageCapabilityProvider.EnergyStorageProvider;
 import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
+import com.fluxtheworld.core.task.TaskState;
 import com.fluxtheworld.core.util.CountdownTimer;
 
 import net.minecraft.core.BlockPos;
@@ -46,11 +47,14 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
     if (this instanceof TaskProvider provider) {
       GenericTask task = provider.getCurrentTask();
 
-      if (task.isActive()) {
+      final var active = task.getState() instanceof TaskState.Active;
+      final var pending = task.getState() instanceof TaskState.Pending;
+
+      if (active) {
         task.tick();
       }
 
-      if (!task.isActive() && createNextTaskDelay.tickAndReset()) {
+      if (!active && !pending) {
         provider.createNextTask();
       }
     }

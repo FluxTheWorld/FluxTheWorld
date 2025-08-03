@@ -6,25 +6,20 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface GenericTask extends INBTSerializable<CompoundTag> {
   public static GenericTask NONE = new GenericTask() {
+    private final TaskState state = new TaskState.Completed();
 
     @Override
     public void tick() {
       // no-op
     }
 
-    @Override
     public float getProgress() {
       return 0.0f;
     }
 
     @Override
-    public boolean isActive() {
-      return false;
-    }
-
-    @Override
-    public boolean isCompleted() {
-      return true;
+    public TaskState getState() {
+      return this.state;
     }
 
     @Override
@@ -39,13 +34,9 @@ public interface GenericTask extends INBTSerializable<CompoundTag> {
 
   };
 
-  // TODO: Maybe add state: Idle/Active/Error/Canceled/Successful etc
-
   void tick();
 
   float getProgress();
 
-  boolean isActive();
-
-  boolean isCompleted();
+  TaskState getState();
 }
