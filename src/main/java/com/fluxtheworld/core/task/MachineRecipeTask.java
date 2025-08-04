@@ -28,9 +28,9 @@ public abstract class MachineRecipeTask<BE extends MachineBlockEntity, R extends
   }
 
   @Override
-  public final void tick() {
+  public final TaskState tick() {
     if (!(this.state instanceof TaskState.Active)) {
-      return;
+      return this.state;
     }
 
     if (this.getRecipe().processingTime() > this.progress) {
@@ -42,6 +42,8 @@ public abstract class MachineRecipeTask<BE extends MachineBlockEntity, R extends
     else {
       this.state = this.attemptComplete();
     }
+
+    return this.state;
   }
 
   @Override

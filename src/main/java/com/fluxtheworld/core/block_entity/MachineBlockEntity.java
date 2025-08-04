@@ -9,7 +9,6 @@ import com.fluxtheworld.core.storage.energy.EnergyStorageCapabilityProvider.Ener
 import com.fluxtheworld.core.task.GenericTask;
 import com.fluxtheworld.core.task.TaskProvider;
 import com.fluxtheworld.core.task.TaskState;
-import com.fluxtheworld.core.util.CountdownTimer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup.Provider;
@@ -24,11 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class MachineBlockEntity extends GenericBlockEntity implements MenuProvider {
 
-  private CountdownTimer createNextTaskDelay;
-
   protected MachineBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
     super(type, worldPosition, blockState);
-    this.createNextTaskDelay = new CountdownTimer(20 / 4);
   }
 
   // region MenuProvider
@@ -45,16 +41,10 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
     super.serverTick();
 
     if (this instanceof TaskProvider provider) {
-      GenericTask task = provider.getCurrentTask();
+      final var task = provider.getCurrentTask();
+      final var state = task.tick();
 
-      final var active = task.getState() instanceof TaskState.Active;
-      final var pending = task.getState() instanceof TaskState.Pending;
-
-      if (active) {
-        task.tick();
-      }
-
-      if (!active && !pending) {
+      if (state instanceof TaskState.Completed) {
         provider.createNextTask();
       }
     }
