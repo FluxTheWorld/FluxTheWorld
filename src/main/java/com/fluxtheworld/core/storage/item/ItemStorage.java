@@ -18,13 +18,13 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 public class ItemStorage extends ItemStackHandler {
 
   private final ItemSlotAccessConfig slotAccess;
-  private final @Nullable IntConsumer changeListener;
+  private final @Nullable ItemStorageChangeListener changeListener;
 
   public ItemStorage(ItemSlotAccessConfig slotAccess) {
     this(slotAccess, null);
   }
 
-  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable IntConsumer changeListener) {
+  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ItemStorageChangeListener changeListener) {
     super(slotAccess.getSlotCount());
     this.slotAccess = slotAccess;
     this.changeListener = changeListener;
@@ -132,7 +132,7 @@ public class ItemStorage extends ItemStackHandler {
     super.onContentsChanged(slot);
 
     if (this.changeListener != null) {
-      this.changeListener.accept(slot);
+      this.changeListener.onItemStorageChanged(slot);
     }
   }
 

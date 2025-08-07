@@ -2,8 +2,6 @@ package com.fluxtheworld.core.storage.item;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
-
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
@@ -19,9 +17,4 @@ public class ItemStorageCapabilityProvider implements ICapabilityProvider<BlockE
     return null;
   }
 
-  public interface ItemStorageProvider {
-    ItemStorage getItemStorage();
-
-    SideAccessConfig getItemSideAccess();
-  }
 }

@@ -1,5 +1,8 @@
 package com.fluxtheworld.core.block_entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fluxtheworld.core.Preconditions;
 
 import net.minecraft.core.BlockPos;
@@ -12,9 +15,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.LogicalSide;
 
 public class GenericBlockEntity extends BlockEntity {
+  private Set<BlockEntityChange> changes;
 
   public GenericBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
     super(type, worldPosition, blockState);
+    this.changes = new HashSet<>();
   }
 
   // region Ticking
@@ -22,7 +27,8 @@ public class GenericBlockEntity extends BlockEntity {
   public static void tick(Level level, BlockPos pos, BlockState state, GenericBlockEntity blockEntity) {
     if (level.isClientSide) {
       blockEntity.clientTick();
-    } else {
+    }
+    else {
       blockEntity.serverTick();
     }
     blockEntity.tick();
@@ -37,6 +43,20 @@ public class GenericBlockEntity extends BlockEntity {
   }
 
   public void tick() {
+    this.changes.clear();
+  }
+
+  // endregion
+
+  // region Changes
+
+  public void setChanged(BlockEntityChange change) {
+    this.changes.add(change);
+    this.setChanged();
+  }
+
+  public boolean wasChanged(BlockEntityChange change) {
+    return this.changes.contains(change);
   }
 
   // endregion

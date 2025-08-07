@@ -1,5 +1,6 @@
 package com.fluxtheworld.machine.alloy_smelter;
 
+import com.fluxtheworld.FTWMod;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
 import com.fluxtheworld.core.task.MachineRecipeTask;
 import com.fluxtheworld.core.task.TaskState;
@@ -13,7 +14,7 @@ public class AlloySmelterTask extends MachineRecipeTask<AlloySmelterBlockEntity,
   }
 
   @Override
-  public TaskState doWork() {
+  public TaskState doRecipe() {
     final var energy = this.getBlockEntity().getEnergyStorage();
     final var recipe = this.getRecipe();
 

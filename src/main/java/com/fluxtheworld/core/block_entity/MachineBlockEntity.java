@@ -3,10 +3,10 @@ package com.fluxtheworld.core.block_entity;
 import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.storage.item.ItemStorage;
-import com.fluxtheworld.core.storage.item.ItemStorageCapabilityProvider.ItemStorageProvider;
+import com.fluxtheworld.core.storage.item.ItemStorageProvider;
 import com.fluxtheworld.core.storage.energy.EnergyStorage;
 import com.fluxtheworld.core.storage.energy.EnergyStorageCapabilityProvider.EnergyStorageProvider;
-import com.fluxtheworld.core.task.GenericTask;
+import com.fluxtheworld.core.task.SerializableTask;
 import com.fluxtheworld.core.task.TaskProvider;
 import com.fluxtheworld.core.task.TaskState;
 
@@ -42,9 +42,15 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
 
     if (this instanceof TaskProvider provider) {
       final var task = provider.getCurrentTask();
+
+      // Avoid invalidating state on EnergyStorage changes, as tasks consume energy continuously per tick.
+      if (this.wasChanged(BlockEntityChange.ItemStorage) || this.wasChanged(BlockEntityChange.FluidStorage)) {
+        task.invalidate();
+      }
+
       final var state = task.tick();
 
-      if (state instanceof TaskState.Completed) {
+      if (state instanceof TaskState.Completed || state instanceof TaskState.Aborted) {
         provider.createNextTask();
       }
     }
@@ -75,8 +81,8 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
     }
 
     if (this instanceof TaskProvider provider) {
-      GenericTask currentTask = provider.getCurrentTask();
-      if (currentTask != GenericTask.NONE) {
+      SerializableTask currentTask = provider.getCurrentTask();
+      if (currentTask != SerializableTask.NONE) {
         tag.put("CurrentTask", currentTask.serializeNBT(registries));
       }
     }
@@ -98,7 +104,7 @@ public abstract class MachineBlockEntity extends GenericBlockEntity implements M
     }
 
     if (this instanceof TaskProvider provider && tag.contains("CurrentTask")) {
-      GenericTask currentTask = provider.createEmptyTask();
+      SerializableTask currentTask = provider.createEmptyTask();
       currentTask.deserializeNBT(registries, tag.getCompound("CurrentTask"));
     }
 
