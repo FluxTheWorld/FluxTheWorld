@@ -1,12 +1,13 @@
 package com.fluxtheworld.core.storage.item;
 
-import java.util.function.IntConsumer;
-
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.core.storage.StackStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
+import com.fluxtheworld.core.storage.wrapper.ItemPipeStorageWrapper;
+import com.fluxtheworld.core.storage.wrapper.ItemMenuStorageWrapper;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -15,19 +16,60 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class ItemStorage extends ItemStackHandler {
+public class ItemStorage extends StackStorage<ItemStack, ItemSlotAccessConfig, ItemStorageChangeListener> {
 
-  private final ItemSlotAccessConfig slotAccess;
-  private final @Nullable ItemStorageChangeListener changeListener;
+  private final ItemStackHandler itemHandler;
 
   public ItemStorage(ItemSlotAccessConfig slotAccess) {
     this(slotAccess, null);
   }
 
   public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ItemStorageChangeListener changeListener) {
-    super(slotAccess.getSlotCount());
-    this.slotAccess = slotAccess;
-    this.changeListener = changeListener;
+    super(slotAccess, changeListener);
+    this.itemHandler = new ItemStackHandler(slotAccess.getSlotCount()) {
+      @Override
+      public int getSlotLimit(int slot) {
+        return ItemStorage.this.getSlotLimit(slot);
+      }
+
+      @Override
+      public boolean isItemValid(int slot, ItemStack stack) {
+        return ItemStorage.this.isValid(slot, stack);
+      }
+
+      @Override
+      protected void onContentsChanged(int slot) {
+        super.onContentsChanged(slot);
+        ItemStorage.this.onContentsChanged(slot);
+      }
+    };
+  }
+
+  // Implementation of abstract methods from Storage base class
+
+  @Override
+  public int getSlotCount() {
+    return this.slotAccess.getSlotCount();
+  }
+
+  @Override
+  public ItemStack getStackInSlot(int slot) {
+    return this.itemHandler.getStackInSlot(slot);
+  }
+
+  @Override
+  public ItemStack insert(int slot, ItemStack stack, boolean simulate) {
+    return this.itemHandler.insertItem(slot, stack, simulate);
+  }
+
+  @Override
+  public ItemStack extract(int slot, int amount, boolean simulate) {
+    return this.itemHandler.extractItem(slot, amount, simulate);
+  }
+
+  @Override
+  public boolean isValid(int slot, ItemStack stack) {
+    return this.slotAccess.isValid(slot, stack);
   }
 
   @Override
@@ -36,41 +78,22 @@ public class ItemStorage extends ItemStackHandler {
   }
 
   @Override
-  public boolean isItemValid(int slot, ItemStack stack) {
-    return this.slotAccess.isItemValid(slot, stack);
+  public ItemStack getEmpty() {
+    return ItemStack.EMPTY;
   }
 
-  public int getSlotIndex(String name) {
-    return this.slotAccess.getSlotIndex(name);
+  @Override
+  public boolean isEmpty(ItemStack stack) {
+    return stack.isEmpty();
   }
 
-  public ItemStack getStackInSlot(String name) {
-    return this.getStackInSlot(this.getSlotIndex(name));
+  @Override
+  public int getAmount(ItemStack stack) {
+    return stack.getCount();
   }
 
-  public ItemStack insertItem(String name, ItemStack stack, boolean simulate) {
-    return this.insertItem(this.getSlotIndex(name), stack, simulate);
-  }
-
-  public ItemStack extractItem(String name, int amount, boolean simulate) {
-    return this.extractItem(this.getSlotIndex(name), amount, simulate);
-  }
-
-  public ItemStack insertItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
-    var remaining = stack.copy();
-
-    for (int index : this.slotAccess.getTaggedSlots(tag)) {
-      if (remaining.isEmpty()) {
-        return ItemStack.EMPTY;
-      }
-
-      remaining = super.insertItem(index, remaining, simulate);
-    }
-
-    return remaining;
-  }
-
-  public ItemStack extractItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
+  @Override
+  public ItemStack extract(SlotAccessTag tag, ItemStack stack, boolean simulate) {
     var extracted = stack.copyWithCount(0);
 
     for (int index : this.slotAccess.getTaggedSlots(tag)) {
@@ -82,12 +105,90 @@ public class ItemStorage extends ItemStackHandler {
         continue;
       }
 
-      var found = super.extractItem(index, stack.getCount() - extracted.getCount(), simulate);
+      var found = this.extract(index, stack.getCount() - extracted.getCount(), simulate);
       extracted.grow(found.getCount());
     }
 
     return extracted;
   }
+
+  @Override
+  public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
+    if (side == null) {
+      return new ItemPipeStorageWrapper(this, slotAccess, sideAccess, null);
+    }
+
+    if (sideAccess.getMode(side).canConnect()) {
+      return new ItemPipeStorageWrapper(this, slotAccess, sideAccess, side);
+    }
+
+    return null;
+  }
+
+  @Override
+  public IItemHandler getForMenu() {
+    return new ItemMenuStorageWrapper(this, slotAccess);
+  }
+
+  // Backward compatibility methods (delegate to base class methods with new names)
+
+  /**
+   * @deprecated Use {@link #insert(int, ItemStack, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+    return this.insert(slot, stack, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #extract(int, int, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack extractItem(int slot, int amount, boolean simulate) {
+    return this.extract(slot, amount, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #insert(String, ItemStack, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack insertItem(String name, ItemStack stack, boolean simulate) {
+    return this.insert(name, stack, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #extract(String, int, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack extractItem(String name, int amount, boolean simulate) {
+    return this.extract(name, amount, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #insert(SlotAccessTag, ItemStack, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack insertItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
+    return this.insert(tag, stack, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #extract(SlotAccessTag, ItemStack, boolean)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public ItemStack extractItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
+    return this.extract(tag, stack, simulate);
+  }
+
+  /**
+   * @deprecated Use {@link #isValid(int, ItemStack)} instead
+   */
+  @Deprecated(forRemoval = true)
+  public boolean isItemValid(int slot, ItemStack stack) {
+    return this.isValid(slot, stack);
+  }
+
+  // Additional ItemStorage-specific methods
 
   /**
    * Extracts an item stack matching the given ingredient from the storage.
@@ -102,153 +203,60 @@ public class ItemStorage extends ItemStackHandler {
    */
   public ItemStack extractIngredient(SlotAccessTag tag, SizedIngredient ingredient, boolean simulate) {
     for (ItemStack stack : ingredient.getItems()) {
-      ItemStack found = this.extractItem(tag, stack, true);
+      ItemStack found = this.extract(tag, stack, true);
       if (found.getCount() == stack.getCount()) {
-        return simulate ? found : this.extractItem(tag, stack, false);
+        return simulate ? found : this.extract(tag, stack, false);
       }
     }
 
     return ItemStack.EMPTY;
   }
 
-  public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
-    if (side == null) {
-      return new Pipe(this, slotAccess, sideAccess, null);
-    }
+  // Methods for direct ItemStackHandler compatibility
 
-    if (sideAccess.getMode(side).canConnect()) {
-      return new Pipe(this, slotAccess, sideAccess, side);
-    }
-
-    return null;
+  /**
+   * Gets the number of slots in the underlying ItemStackHandler.
+   * This method provides compatibility with ItemStackHandler API.
+   * 
+   * @return The number of slots
+   */
+  public int getSlots() {
+    return this.itemHandler.getSlots();
   }
 
-  public IItemHandler getForMenu() {
-    return new Menu(this, slotAccess);
+  /**
+   * Sets the stack in the specified slot directly.
+   * This method provides compatibility with ItemStackHandler API.
+   *
+   * @param slot The slot index
+   * @param stack The stack to set
+   */
+  public void setStackInSlot(int slot, ItemStack stack) {
+    this.itemHandler.setStackInSlot(slot, stack);
   }
 
-  @Override
-  protected void onContentsChanged(int slot) {
-    super.onContentsChanged(slot);
+  // NBT serialization methods for compatibility with ItemStackHandler
 
-    if (this.changeListener != null) {
-      this.changeListener.onItemStorageChanged(slot);
-    }
+  /**
+   * Serializes the storage contents to NBT.
+   * This method provides compatibility with ItemStackHandler API.
+   *
+   * @param registries The holder lookup provider
+   * @return The serialized NBT compound tag
+   */
+  public net.minecraft.nbt.CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider registries) {
+    return this.itemHandler.serializeNBT(registries);
   }
 
-  private static class Pipe implements IItemHandler {
-
-    private final ItemStorage storage;
-    private final ItemSlotAccessConfig slotAccess;
-    private final SideAccessConfig sideAccess;
-    private final @Nullable Direction side;
-
-    public Pipe(ItemStorage storage, ItemSlotAccessConfig slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
-      this.storage = storage;
-      this.side = side;
-      this.sideAccess = sideAccess;
-      this.slotAccess = slotAccess;
-    }
-
-    @Override
-    public int getSlots() {
-      return storage.getSlots();
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-      return storage.getStackInSlot(slot);
-    }
-
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!this.slotAccess.canPipeInsert(slot)) {
-        return stack;
-      }
-
-      if (side != null && !sideAccess.getMode(side).canInput()) {
-        return stack;
-      }
-
-      return storage.insertItem(slot, stack, simulate);
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!this.slotAccess.canPipeExtract(slot)) {
-        return ItemStack.EMPTY;
-      }
-
-      if (side != null && !sideAccess.getMode(side).canOutput()) {
-        return ItemStack.EMPTY;
-      }
-
-      return storage.extractItem(slot, amount, simulate);
-    }
-
-    @Override
-    public int getSlotLimit(int slot) {
-      return storage.getSlotLimit(slot);
-    }
-
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
-      return this.slotAccess.canPipeInsert(slot) && storage.isItemValid(slot, stack);
-    }
+  /**
+   * Deserializes the storage contents from NBT.
+   * This method provides compatibility with ItemStackHandler API.
+   *
+   * @param registries The holder lookup provider
+   * @param nbt The NBT compound tag to deserialize from
+   */
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider registries, net.minecraft.nbt.CompoundTag nbt) {
+    this.itemHandler.deserializeNBT(registries, nbt);
   }
 
-  // SlotItemHandler requires us to use IItemHandlerModifiable interface
-  private static class Menu implements IItemHandlerModifiable {
-
-    private final ItemStorage storage;
-    private final ItemSlotAccessConfig slotAccess;
-
-    public Menu(ItemStorage storage, ItemSlotAccessConfig slotAccess) {
-      this.storage = storage;
-      this.slotAccess = slotAccess;
-    }
-
-    @Override
-    public int getSlots() {
-      return storage.getSlots();
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-      return storage.getStackInSlot(slot);
-    }
-
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!this.slotAccess.canMenuInsert(slot)) {
-        return stack;
-      }
-
-      return storage.insertItem(slot, stack, simulate);
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!this.slotAccess.canMenuExtract(slot)) {
-        return ItemStack.EMPTY;
-      }
-
-      return storage.extractItem(slot, amount, simulate);
-    }
-
-    @Override
-    public int getSlotLimit(int slot) {
-      return storage.getSlotLimit(slot);
-    }
-
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
-      return this.slotAccess.canMenuInsert(slot) && storage.isItemValid(slot, stack);
-    }
-
-    @Override
-    public void setStackInSlot(int slot, ItemStack stack) {
-      this.storage.setStackInSlot(slot, stack);
-    }
-  }
 }
