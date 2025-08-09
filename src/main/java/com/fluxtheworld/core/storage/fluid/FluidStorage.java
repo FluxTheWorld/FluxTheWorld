@@ -145,7 +145,7 @@ public class FluidStorage extends StackStorage<FluidStack, FluidSlotAccessConfig
       int fillAmount = Math.min(resource.getAmount(), limit);
       if (!simulate) {
         this.fluids[tank] = resource.copyWithAmount(fillAmount);
-        this.onChanged(tank);
+        this.onContentsChanged(tank);
       }
       return fillAmount;
     } else if (!this.fluids[tank].isFluidEqual(resource)) {
@@ -155,7 +155,7 @@ public class FluidStorage extends StackStorage<FluidStack, FluidSlotAccessConfig
     int filled = Math.min(limit - this.fluids[tank].getAmount(), resource.getAmount());
     if (!simulate && filled > 0) {
       this.fluids[tank].grow(filled);
-      this.onChanged(tank);
+      this.onContentsChanged(tank);
     }
     return filled;
   }
@@ -177,7 +177,7 @@ public class FluidStorage extends StackStorage<FluidStack, FluidSlotAccessConfig
       if (this.fluids[tank].isEmpty()) {
         this.fluids[tank] = FluidStack.EMPTY;
       }
-      this.onChanged(tank);
+      this.onContentsChanged(tank);
     }
 
     return stack;

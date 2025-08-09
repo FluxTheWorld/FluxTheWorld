@@ -64,7 +64,7 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
    * @param slot
    *          The index of the slot that changed
    */
-  protected void onChanged(int slot) {
+  protected void onContentsChanged(int slot) {
   }
 
   /**
@@ -103,6 +103,12 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
   public abstract T extract(int slot, int amount, boolean simulate);
 
   // region Utils
+
+  protected void validateSlotIndex(int slot) {
+    if (slot < 0 || slot >= this.getSlotCount()) {
+      throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + this.getSlotCount() + ")");
+    }
+  }
 
   /**
    * Gets the index of a named slot.

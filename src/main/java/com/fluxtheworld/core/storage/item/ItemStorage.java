@@ -29,7 +29,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
   }
 
   @Override
-  protected void onChanged(int slot) {
+  protected void onContentsChanged(int slot) {
     if (changeListener != null) {
       changeListener.onItemStorageChanged(slot);
     }
@@ -37,7 +37,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
 
   @Override
   public ItemStack getStackInSlot(int slot) {
-    validateSlotIndex(slot);
+    this.validateSlotIndex(slot);
     return this.stacks.get(slot);
   }
 
@@ -51,10 +51,10 @@ public class ItemStorage extends StackStorage<ItemStack> {
       return stack;
     }
 
-    validateSlotIndex(slot);
+    this.validateSlotIndex(slot);
 
     ItemStack existing = this.stacks.get(slot);
-    int limit = getStackLimit(slot, stack);
+    int limit = this.getStackLimit(slot, stack);
 
     if (!existing.isEmpty()) {
       if (!ItemStack.isSameItemSameComponents(stack, existing)) {
@@ -76,7 +76,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
       else {
         existing.grow(reachedLimit ? limit : stack.getCount());
       }
-      onChanged(slot);
+      this.onContentsChanged(slot);
     }
 
     return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
@@ -88,7 +88,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
       return ItemStack.EMPTY;
     }
 
-    validateSlotIndex(slot);
+    this.validateSlotIndex(slot);
 
     ItemStack existing = this.stacks.get(slot);
 
@@ -101,7 +101,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
     if (existing.getCount() <= toExtract) {
       if (!simulate) {
         this.stacks.set(slot, ItemStack.EMPTY);
-        onChanged(slot);
+        this.onContentsChanged(slot);
         return existing;
       }
       else {
@@ -111,50 +111,50 @@ public class ItemStorage extends StackStorage<ItemStack> {
     else {
       if (!simulate) {
         this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
-        onChanged(slot);
+        this.onContentsChanged(slot);
       }
 
       return existing.copyWithCount(toExtract);
     }
   }
 
+  private int getStackLimit(int slot, ItemStack stack) {
+    return Math.min(this.getSlotLimit(slot), stack.getMaxStackSize());
+  }
+
+  // region Serialization
+
   @Override
   public CompoundTag serializeNBT(Provider provider) {
-    ListTag nbtTagList = new ListTag();
-    for (int i = 0; i < stacks.size(); i++) {
-      if (!stacks.get(i).isEmpty()) {
+    ListTag items = new ListTag();
+    for (int i = 0; i < this.stacks.size(); i++) {
+      ItemStack stack = this.stacks.get(i);
+      if (!stack.isEmpty()) {
         CompoundTag itemTag = new CompoundTag();
         itemTag.putInt("Slot", i);
-        nbtTagList.add(stacks.get(i).save(provider, itemTag));
+        items.add(stack.save(provider, itemTag));
       }
     }
-    CompoundTag nbt = new CompoundTag();
-    nbt.put("Items", nbtTagList);
-    return nbt;
+
+    CompoundTag tag = new CompoundTag();
+    tag.put("Items", items);
+    return tag;
   }
 
   @Override
-  public void deserializeNBT(Provider provider, CompoundTag nbt) {
-    ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-    for (int i = 0; i < tagList.size(); i++) {
-      CompoundTag itemTags = tagList.getCompound(i);
-      int slot = itemTags.getInt("Slot");
+  public void deserializeNBT(Provider provider, CompoundTag tag) {
+    ListTag items = tag.getList("Items", Tag.TAG_COMPOUND);
+    for (int i = 0; i < items.size(); i++) {
+      CompoundTag item = items.getCompound(i);
 
-      if (slot >= 0 && slot < stacks.size()) {
-        ItemStack.parse(provider, itemTags).ifPresent(stack -> stacks.set(slot, stack));
-      }
+      int slot = item.getInt("Slot");
+      this.validateSlotIndex(slot);
+
+      ItemStack.parse(provider, item).ifPresent(stack -> stacks.set(slot, stack));
     }
   }
 
-  protected int getStackLimit(int slot, ItemStack stack) {
-    return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
-  }
-
-  protected void validateSlotIndex(int slot) {
-    if (slot < 0 || slot >= stacks.size()) {
-      throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + stacks.size() + ")");
-    }
-  }
+  // endregion
 
   public interface ChangeListener {
     void onItemStorageChanged(int slot);
