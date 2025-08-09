@@ -1,23 +1,19 @@
-package com.fluxtheworld.core.storage.wrapper;
+package com.fluxtheworld.core.storage.fluid;
 
-import javax.annotation.Nullable;
-
-import com.fluxtheworld.core.storage.fluid.FluidStorage;
-import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
+import com.fluxtheworld.core.storage.MenuStorageWrapper;
 import com.fluxtheworld.core.storage.slot_access.FluidSlotAccessConfig;
 
-import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
- * Pipe wrapper for FluidStorage that implements IFluidHandler interface.
- * This class provides pipe access control for fluid storage systems.
+ * Menu wrapper for FluidStorage that implements IFluidHandler interface.
+ * This class provides menu/GUI access control for fluid storage systems.
  */
-public class FluidPipeStorageWrapper extends PipeStorageWrapper<FluidStack, FluidStorage, FluidSlotAccessConfig, IFluidHandler> implements IFluidHandler {
+public class FluidMenuStorageWrapper extends MenuStorageWrapper<FluidStack, FluidStorage, FluidSlotAccessConfig, IFluidHandler> implements IFluidHandler {
 
-  public FluidPipeStorageWrapper(FluidStorage storage, FluidSlotAccessConfig slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
-    super(storage, slotAccess, sideAccess, side);
+  public FluidMenuStorageWrapper(FluidStorage storage, FluidSlotAccessConfig slotAccess) {
+    super(storage, slotAccess);
   }
 
   @Override
@@ -91,5 +87,12 @@ public class FluidPipeStorageWrapper extends PipeStorageWrapper<FluidStack, Flui
     }
     
     return FluidStack.EMPTY;
+  }
+
+  @Override
+  protected void setStackInSlot(int slot, FluidStack stack) {
+    // For fluids, we don't typically have direct slot setting like items
+    // This would need to be implemented based on specific requirements
+    throw new UnsupportedOperationException("Direct fluid slot setting is not supported");
   }
 }

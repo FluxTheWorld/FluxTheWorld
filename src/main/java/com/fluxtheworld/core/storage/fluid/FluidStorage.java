@@ -6,8 +6,6 @@ import com.fluxtheworld.core.storage.StackStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.FluidSlotAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
-import com.fluxtheworld.core.storage.wrapper.FluidPipeStorageWrapper;
-import com.fluxtheworld.core.storage.wrapper.FluidMenuStorageWrapper;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -68,7 +66,7 @@ public class FluidStorage extends StackStorage<FluidStack, FluidSlotAccessConfig
 
   @Override
   public int getSlotLimit(int slot) {
-    return this.slotAccess.getStackLimit(slot);
+    return this.slotAccess.getSlotCapacity(slot);
   }
 
   @Override

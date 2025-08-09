@@ -4,9 +4,6 @@ import com.fluxtheworld.core.storage.slot_access.SlotAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
 import com.fluxtheworld.core.storage.stack_adapter.StackAdapter;
 
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-
 /**
  * Base abstract class for storage systems that handle different types of content (items, fluids, etc.).
  * This class provides common functionality for slot-based storage with access control and change notifications.
@@ -14,14 +11,14 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * @param <T>
  *          The type of content stored (e.g., ItemStack, FluidStack)
  */
-public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
+public abstract class StackStorage<T, H> {
 
   protected final SlotAccessConfig<T> slotAccess;
   protected final StackAdapter<T> stackAdapter;
 
-  protected StackStorage(SlotAccessConfig<T> slotAccess, StackAdapter<T> stackAdapter) {
-    this.slotAccess = slotAccess;
+  protected StackStorage(StackAdapter<T> stackAdapter, SlotAccessConfig<T> slotAccess) {
     this.stackAdapter = stackAdapter;
+    this.slotAccess = slotAccess;
   }
 
   /**
@@ -40,8 +37,8 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
    *          The slot index
    * @return The slot's capacity limit
    */
-  public int getSlotLimit(int slot) {
-    return this.slotAccess.getStackLimit(slot);
+  public int getSlotCapacity(int slot) {
+    return this.slotAccess.getSlotCapacity(slot);
   }
 
   /**
@@ -55,6 +52,14 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
    */
   public boolean isValid(int slot, T stack) {
     return this.slotAccess.isValid(slot, stack);
+  }
+
+  public boolean canInsert(int slot) {
+    return true;
+  }
+
+  public boolean canExtract(int slot) {
+    return true;
   }
 
   /**
@@ -102,6 +107,10 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
    */
   public abstract T extract(int slot, int amount, boolean simulate);
 
+  public abstract void setStackInSlot(int slot, T stack);
+
+  public abstract H getNeoForgeHandler();
+  
   // region Utils
 
   protected void validateSlotIndex(int slot) {

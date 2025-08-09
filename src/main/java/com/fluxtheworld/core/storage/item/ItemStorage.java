@@ -3,6 +3,7 @@ package com.fluxtheworld.core.storage.item;
 import javax.annotation.Nullable;
 
 import com.fluxtheworld.core.storage.StackStorage;
+import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
 import com.fluxtheworld.core.storage.stack_adapter.ItemStackAdapter;
 
@@ -12,8 +13,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public class ItemStorage extends StackStorage<ItemStack> {
+public class ItemStorage extends StackStorage<ItemStack> implements INBTSerializable<CompoundTag> {
 
   private final NonNullList<ItemStack> stacks;
   private final @Nullable ChangeListener changeListener;
@@ -23,7 +26,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
   }
 
   public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ChangeListener changeListener) {
-    super(slotAccess, ItemStackAdapter.INSTANCE);
+    super(ItemStackAdapter.INSTANCE, slotAccess);
     this.changeListener = changeListener;
     this.stacks = NonNullList.withSize(slotAccess.getSlotCount(), ItemStack.EMPTY);
   }
@@ -47,7 +50,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
       return ItemStack.EMPTY;
     }
 
-    if (!isValid(slot, stack)) {
+    if (!this.isValid(slot, stack) || !this.canInsert(slot)) {
       return stack;
     }
 
@@ -84,7 +87,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
 
   @Override
   public ItemStack extract(int slot, int amount, boolean simulate) {
-    if (amount == 0) {
+    if (amount == 0 || !this.canExtract(slot)) {
       return ItemStack.EMPTY;
     }
 
@@ -118,8 +121,19 @@ public class ItemStorage extends StackStorage<ItemStack> {
     }
   }
 
+  @Override
+  protected void setStackInSlot(int slot, ItemStack stack) {
+    this.validateSlotIndex(slot);
+    this.stacks.set(slot, stack);
+    this.onContentsChanged(slot);
+  }
+
   private int getStackLimit(int slot, ItemStack stack) {
-    return Math.min(this.getSlotLimit(slot), stack.getMaxStackSize());
+    return Math.min(this.getSlotCapacity(slot), stack.getMaxStackSize());
+  }
+
+  public StackStorage<ItemStack> getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
+    return new PipeItemStorage(this, slotAccess, sideAccess, side);
   }
 
   // region Serialization

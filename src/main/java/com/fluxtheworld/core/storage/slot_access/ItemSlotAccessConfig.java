@@ -17,14 +17,6 @@ public class ItemSlotAccessConfig extends SlotAccessConfig<ItemStack> {
     return this.rules.get(slot).isValid(stack);
   }
 
-  /**
-   * @deprecated Use {@link #isValid(int, ItemStack)} instead
-   */
-  @Deprecated(forRemoval = true)
-  public boolean isItemValid(int slot, ItemStack stack) {
-    return isValid(slot, stack);
-  }
-
   public static Builder builder() {
     return new Builder();
   }

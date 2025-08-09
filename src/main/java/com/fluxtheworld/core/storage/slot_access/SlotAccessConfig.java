@@ -25,7 +25,7 @@ public abstract class SlotAccessConfig<T> {
 
   public abstract boolean isValid(int slot, T stack);
 
-  public int getStackLimit(int slot) {
+  public int getSlotCapacity(int slot) {
     if (slot < 0 || slot >= this.getSlotCount()) {
       return 0;
     }

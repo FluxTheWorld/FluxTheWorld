@@ -17,14 +17,6 @@ public class FluidSlotAccessConfig extends SlotAccessConfig<FluidStack> {
     return this.rules.get(slot).isValid(stack);
   }
 
-  /**
-   * @deprecated Use {@link #isValid(int, FluidStack)} instead
-   */
-  @Deprecated(forRemoval = true)
-  public boolean isFluidValid(int slot, FluidStack stack) {
-    return isValid(slot, stack);
-  }
-
   public static Builder builder() {
     return new Builder();
   }
