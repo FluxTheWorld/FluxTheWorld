@@ -1,254 +1,177 @@
 package com.fluxtheworld.core.storage.item;
 
-import java.util.function.IntConsumer;
-
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.core.storage.StackStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
-import com.fluxtheworld.core.storage.slot_access.SlotAccessTag;
+import com.fluxtheworld.core.storage.stack_adapter.ItemStackAdapter;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.core.Direction;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public class ItemStorage extends ItemStackHandler {
+public class ItemStorage extends StackStorage<ItemStack> implements INBTSerializable<CompoundTag> {
 
-  private final ItemSlotAccessConfig slotAccess;
-  private final @Nullable ItemStorageChangeListener changeListener;
+  private final NonNullList<ItemStack> stacks;
+  private final @Nullable ChangeListener changeListener;
 
   public ItemStorage(ItemSlotAccessConfig slotAccess) {
     this(slotAccess, null);
   }
 
-  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ItemStorageChangeListener changeListener) {
-    super(slotAccess.getSlotCount());
-    this.slotAccess = slotAccess;
+  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ChangeListener changeListener) {
+    super(ItemStackAdapter.INSTANCE, slotAccess);
     this.changeListener = changeListener;
-  }
-
-  @Override
-  public int getSlotLimit(int slot) {
-    return this.slotAccess.getStackLimit(slot);
-  }
-
-  @Override
-  public boolean isItemValid(int slot, ItemStack stack) {
-    return this.slotAccess.isItemValid(slot, stack);
-  }
-
-  public int getSlotIndex(String name) {
-    return this.slotAccess.getSlotIndex(name);
-  }
-
-  public ItemStack getStackInSlot(String name) {
-    return this.getStackInSlot(this.getSlotIndex(name));
-  }
-
-  public ItemStack insertItem(String name, ItemStack stack, boolean simulate) {
-    return this.insertItem(this.getSlotIndex(name), stack, simulate);
-  }
-
-  public ItemStack extractItem(String name, int amount, boolean simulate) {
-    return this.extractItem(this.getSlotIndex(name), amount, simulate);
-  }
-
-  public ItemStack insertItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
-    var remaining = stack.copy();
-
-    for (int index : this.slotAccess.getTaggedSlots(tag)) {
-      if (remaining.isEmpty()) {
-        return ItemStack.EMPTY;
-      }
-
-      remaining = super.insertItem(index, remaining, simulate);
-    }
-
-    return remaining;
-  }
-
-  public ItemStack extractItem(SlotAccessTag tag, ItemStack stack, boolean simulate) {
-    var extracted = stack.copyWithCount(0);
-
-    for (int index : this.slotAccess.getTaggedSlots(tag)) {
-      if (extracted.getCount() == stack.getCount()) {
-        break;
-      }
-
-      if (!this.getStackInSlot(index).is(stack.getItem())) {
-        continue;
-      }
-
-      var found = super.extractItem(index, stack.getCount() - extracted.getCount(), simulate);
-      extracted.grow(found.getCount());
-    }
-
-    return extracted;
-  }
-
-  /**
-   * Extracts an item stack matching the given ingredient from the storage.
-   * This method first checks if the required item can be extracted in the specified quantity
-   * in a single operation. It ensures that only one specific type of item is extracted,
-   * even if the ingredient can match multiple suitable item types.
-   *
-   * @param tag The slot access tag to filter which slots to consider.
-   * @param ingredient The sized ingredient representing the item(s) to extract.
-   * @param simulate If true, the extraction is simulated and no items are removed from storage.
-   * @return The extracted ItemStack, or ItemStack.EMPTY if no matching item could be extracted.
-   */
-  public ItemStack extractIngredient(SlotAccessTag tag, SizedIngredient ingredient, boolean simulate) {
-    for (ItemStack stack : ingredient.getItems()) {
-      ItemStack found = this.extractItem(tag, stack, true);
-      if (found.getCount() == stack.getCount()) {
-        return simulate ? found : this.extractItem(tag, stack, false);
-      }
-    }
-
-    return ItemStack.EMPTY;
-  }
-
-  public @Nullable IItemHandler getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
-    if (side == null) {
-      return new Pipe(this, slotAccess, sideAccess, null);
-    }
-
-    if (sideAccess.getMode(side).canConnect()) {
-      return new Pipe(this, slotAccess, sideAccess, side);
-    }
-
-    return null;
-  }
-
-  public IItemHandler getForMenu() {
-    return new Menu(this, slotAccess);
+    this.stacks = NonNullList.withSize(slotAccess.getSlotCount(), ItemStack.EMPTY);
   }
 
   @Override
   protected void onContentsChanged(int slot) {
-    super.onContentsChanged(slot);
-
-    if (this.changeListener != null) {
-      this.changeListener.onItemStorageChanged(slot);
+    if (changeListener != null) {
+      changeListener.onItemStorageChanged(slot);
     }
   }
 
-  private static class Pipe implements IItemHandler {
+  @Override
+  public ItemStack getStackInSlot(int slot) {
+    this.validateSlotIndex(slot);
+    return this.stacks.get(slot);
+  }
 
-    private final ItemStorage storage;
-    private final ItemSlotAccessConfig slotAccess;
-    private final SideAccessConfig sideAccess;
-    private final @Nullable Direction side;
-
-    public Pipe(ItemStorage storage, ItemSlotAccessConfig slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
-      this.storage = storage;
-      this.side = side;
-      this.sideAccess = sideAccess;
-      this.slotAccess = slotAccess;
+  @Override
+  public ItemStack insert(int slot, ItemStack stack, boolean simulate) {
+    if (stack.isEmpty()) {
+      return ItemStack.EMPTY;
     }
 
-    @Override
-    public int getSlots() {
-      return storage.getSlots();
+    if (!this.isValid(slot, stack) || !this.canInsert(slot)) {
+      return stack;
     }
 
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-      return storage.getStackInSlot(slot);
-    }
+    this.validateSlotIndex(slot);
 
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!this.slotAccess.canPipeInsert(slot)) {
+    ItemStack existing = this.stacks.get(slot);
+    int limit = this.getStackLimit(slot, stack);
+
+    if (!existing.isEmpty()) {
+      if (!ItemStack.isSameItemSameComponents(stack, existing)) {
         return stack;
       }
-
-      if (side != null && !sideAccess.getMode(side).canInput()) {
-        return stack;
-      }
-
-      return storage.insertItem(slot, stack, simulate);
+      limit -= existing.getCount();
     }
 
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!this.slotAccess.canPipeExtract(slot)) {
-        return ItemStack.EMPTY;
-      }
-
-      if (side != null && !sideAccess.getMode(side).canOutput()) {
-        return ItemStack.EMPTY;
-      }
-
-      return storage.extractItem(slot, amount, simulate);
+    if (limit <= 0) {
+      return stack;
     }
 
-    @Override
-    public int getSlotLimit(int slot) {
-      return storage.getSlotLimit(slot);
+    boolean reachedLimit = stack.getCount() > limit;
+
+    if (!simulate) {
+      if (existing.isEmpty()) {
+        this.stacks.set(slot, reachedLimit ? stack.copyWithCount(limit) : stack.copy());
+      }
+      else {
+        existing.grow(reachedLimit ? limit : stack.getCount());
+      }
+      this.onContentsChanged(slot);
     }
 
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
-      return this.slotAccess.canPipeInsert(slot) && storage.isItemValid(slot, stack);
+    return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
+  }
+
+  @Override
+  public ItemStack extract(int slot, int amount, boolean simulate) {
+    if (amount == 0 || !this.canExtract(slot)) {
+      return ItemStack.EMPTY;
+    }
+
+    this.validateSlotIndex(slot);
+
+    ItemStack existing = this.stacks.get(slot);
+
+    if (existing.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+
+    int toExtract = Math.min(amount, existing.getMaxStackSize());
+
+    if (existing.getCount() <= toExtract) {
+      if (!simulate) {
+        this.stacks.set(slot, ItemStack.EMPTY);
+        this.onContentsChanged(slot);
+        return existing;
+      }
+      else {
+        return existing.copy();
+      }
+    }
+    else {
+      if (!simulate) {
+        this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
+        this.onContentsChanged(slot);
+      }
+
+      return existing.copyWithCount(toExtract);
     }
   }
 
-  // SlotItemHandler requires us to use IItemHandlerModifiable interface
-  private static class Menu implements IItemHandlerModifiable {
+  @Override
+  protected void setStackInSlot(int slot, ItemStack stack) {
+    this.validateSlotIndex(slot);
+    this.stacks.set(slot, stack);
+    this.onContentsChanged(slot);
+  }
 
-    private final ItemStorage storage;
-    private final ItemSlotAccessConfig slotAccess;
+  private int getStackLimit(int slot, ItemStack stack) {
+    return Math.min(this.getSlotCapacity(slot), stack.getMaxStackSize());
+  }
 
-    public Menu(ItemStorage storage, ItemSlotAccessConfig slotAccess) {
-      this.storage = storage;
-      this.slotAccess = slotAccess;
-    }
+  public StackStorage<ItemStack> getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
+    return new PipeItemStorage(this, slotAccess, sideAccess, side);
+  }
 
-    @Override
-    public int getSlots() {
-      return storage.getSlots();
-    }
+  // region Serialization
 
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-      return storage.getStackInSlot(slot);
-    }
-
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!this.slotAccess.canMenuInsert(slot)) {
-        return stack;
+  @Override
+  public CompoundTag serializeNBT(Provider provider) {
+    ListTag items = new ListTag();
+    for (int i = 0; i < this.stacks.size(); i++) {
+      ItemStack stack = this.stacks.get(i);
+      if (!stack.isEmpty()) {
+        CompoundTag itemTag = new CompoundTag();
+        itemTag.putInt("Slot", i);
+        items.add(stack.save(provider, itemTag));
       }
-
-      return storage.insertItem(slot, stack, simulate);
     }
 
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!this.slotAccess.canMenuExtract(slot)) {
-        return ItemStack.EMPTY;
-      }
+    CompoundTag tag = new CompoundTag();
+    tag.put("Items", items);
+    return tag;
+  }
 
-      return storage.extractItem(slot, amount, simulate);
-    }
+  @Override
+  public void deserializeNBT(Provider provider, CompoundTag tag) {
+    ListTag items = tag.getList("Items", Tag.TAG_COMPOUND);
+    for (int i = 0; i < items.size(); i++) {
+      CompoundTag item = items.getCompound(i);
 
-    @Override
-    public int getSlotLimit(int slot) {
-      return storage.getSlotLimit(slot);
-    }
+      int slot = item.getInt("Slot");
+      this.validateSlotIndex(slot);
 
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
-      return this.slotAccess.canMenuInsert(slot) && storage.isItemValid(slot, stack);
-    }
-
-    @Override
-    public void setStackInSlot(int slot, ItemStack stack) {
-      this.storage.setStackInSlot(slot, stack);
+      ItemStack.parse(provider, item).ifPresent(stack -> stacks.set(slot, stack));
     }
   }
+
+  // endregion
+
+  public interface ChangeListener {
+    void onItemStorageChanged(int slot);
+  }
+
 }
