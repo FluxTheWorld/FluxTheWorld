@@ -5,173 +5,148 @@ import javax.annotation.Nullable;
 import com.fluxtheworld.core.storage.StackStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
-import com.fluxtheworld.core.storage.stack_adapter.ItemStackAdapter;
 
-import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.item.ItemStack;
 
-public class ItemStorage extends StackStorage<ItemStack> implements INBTSerializable<CompoundTag> {
+public class ItemStorage extends StackStorage<ItemStack> {
 
-  private final NonNullList<ItemStack> stacks;
+  private final ItemSlotAccessConfig slotAccess;
   private final @Nullable ChangeListener changeListener;
 
-  public ItemStorage(ItemSlotAccessConfig slotAccess) {
-    this(slotAccess, null);
+  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ChangeListener changeListener) {
+    super(ItemStackAdapter.INSTANCE, slotAccess.getSlotCount());
+    this.slotAccess = slotAccess;
+    this.changeListener = changeListener;
   }
 
-  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ChangeListener changeListener) {
-    super(ItemStackAdapter.INSTANCE, slotAccess);
-    this.changeListener = changeListener;
-    this.stacks = NonNullList.withSize(slotAccess.getSlotCount(), ItemStack.EMPTY);
+  @Override
+  protected int getSlotCapacity(int slot) {
+    return this.slotAccess.getSlotCapacity(slot);
+  }
+
+  @Override
+  public boolean isValid(int slot, ItemStack stack) {
+    return this.slotAccess.isValid(slot, stack) && super.isValid(slot, stack);
+  }
+
+  public Menu getForMenu() {
+    return new Menu(this);
+  }
+
+  public Pipe getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
+    return new Pipe(this, sideAccess, side);
   }
 
   @Override
   protected void onContentsChanged(int slot) {
-    if (changeListener != null) {
-      changeListener.onItemStorageChanged(slot);
+    if (this.changeListener != null) {
+      this.changeListener.onItemStorageChanged(slot);
     }
   }
-
-  @Override
-  public ItemStack getStackInSlot(int slot) {
-    this.validateSlotIndex(slot);
-    return this.stacks.get(slot);
-  }
-
-  @Override
-  public ItemStack insert(int slot, ItemStack stack, boolean simulate) {
-    if (stack.isEmpty()) {
-      return ItemStack.EMPTY;
-    }
-
-    if (!this.isValid(slot, stack) || !this.canInsert(slot)) {
-      return stack;
-    }
-
-    this.validateSlotIndex(slot);
-
-    ItemStack existing = this.stacks.get(slot);
-    int limit = this.getStackLimit(slot, stack);
-
-    if (!existing.isEmpty()) {
-      if (!ItemStack.isSameItemSameComponents(stack, existing)) {
-        return stack;
-      }
-      limit -= existing.getCount();
-    }
-
-    if (limit <= 0) {
-      return stack;
-    }
-
-    boolean reachedLimit = stack.getCount() > limit;
-
-    if (!simulate) {
-      if (existing.isEmpty()) {
-        this.stacks.set(slot, reachedLimit ? stack.copyWithCount(limit) : stack.copy());
-      }
-      else {
-        existing.grow(reachedLimit ? limit : stack.getCount());
-      }
-      this.onContentsChanged(slot);
-    }
-
-    return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
-  }
-
-  @Override
-  public ItemStack extract(int slot, int amount, boolean simulate) {
-    if (amount == 0 || !this.canExtract(slot)) {
-      return ItemStack.EMPTY;
-    }
-
-    this.validateSlotIndex(slot);
-
-    ItemStack existing = this.stacks.get(slot);
-
-    if (existing.isEmpty()) {
-      return ItemStack.EMPTY;
-    }
-
-    int toExtract = Math.min(amount, existing.getMaxStackSize());
-
-    if (existing.getCount() <= toExtract) {
-      if (!simulate) {
-        this.stacks.set(slot, ItemStack.EMPTY);
-        this.onContentsChanged(slot);
-        return existing;
-      }
-      else {
-        return existing.copy();
-      }
-    }
-    else {
-      if (!simulate) {
-        this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
-        this.onContentsChanged(slot);
-      }
-
-      return existing.copyWithCount(toExtract);
-    }
-  }
-
-  @Override
-  protected void setStackInSlot(int slot, ItemStack stack) {
-    this.validateSlotIndex(slot);
-    this.stacks.set(slot, stack);
-    this.onContentsChanged(slot);
-  }
-
-  private int getStackLimit(int slot, ItemStack stack) {
-    return Math.min(this.getSlotCapacity(slot), stack.getMaxStackSize());
-  }
-
-  public StackStorage<ItemStack> getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
-    return new PipeItemStorage(this, slotAccess, sideAccess, side);
-  }
-
-  // region Serialization
-
-  @Override
-  public CompoundTag serializeNBT(Provider provider) {
-    ListTag items = new ListTag();
-    for (int i = 0; i < this.stacks.size(); i++) {
-      ItemStack stack = this.stacks.get(i);
-      if (!stack.isEmpty()) {
-        CompoundTag itemTag = new CompoundTag();
-        itemTag.putInt("Slot", i);
-        items.add(stack.save(provider, itemTag));
-      }
-    }
-
-    CompoundTag tag = new CompoundTag();
-    tag.put("Items", items);
-    return tag;
-  }
-
-  @Override
-  public void deserializeNBT(Provider provider, CompoundTag tag) {
-    ListTag items = tag.getList("Items", Tag.TAG_COMPOUND);
-    for (int i = 0; i < items.size(); i++) {
-      CompoundTag item = items.getCompound(i);
-
-      int slot = item.getInt("Slot");
-      this.validateSlotIndex(slot);
-
-      ItemStack.parse(provider, item).ifPresent(stack -> stacks.set(slot, stack));
-    }
-  }
-
-  // endregion
 
   public interface ChangeListener {
     void onItemStorageChanged(int slot);
   }
 
+  public interface Provider {
+    ItemStorage getItemStorage();
+
+    SideAccessConfig getItemSideAccess();
+  }
+
+  public static class Pipe extends ItemStorageHandler {
+
+    private final SideAccessConfig sideAccess;
+    private final @Nullable Direction side;
+
+    public Pipe(ItemStorage storage, SideAccessConfig sideAccess, @Nullable Direction side) {
+      super(storage);
+      this.side = side;
+      this.sideAccess = sideAccess;
+    }
+
+    public boolean canInsertItem(int slot) {
+      if (!storage.slotAccess.canPipeInsert(slot)) {
+        return false;
+      }
+
+      if (side != null && !sideAccess.getMode(side).canInput()) {
+        return false;
+      }
+
+      return true;
+    }
+
+    public boolean canExtractItem(int slot) {
+      if (!storage.slotAccess.canPipeExtract(slot)) {
+        return false;
+      }
+
+      if (side != null && !sideAccess.getMode(side).canOutput()) {
+        return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+      if (!canInsertItem(slot)) {
+        return stack;
+      }
+
+      return super.insertItem(slot, stack, simulate);
+    }
+
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+      if (!canExtractItem(slot)) {
+        return ItemStack.EMPTY;
+      }
+
+      return super.extractItem(slot, amount, simulate);
+    }
+  }
+
+  public static class Menu extends ItemStorageHandler {
+
+    public Menu(ItemStorage storage) {
+      super(storage);
+    }
+
+    public boolean canInsertItem(int slot) {
+      if (!storage.slotAccess.canMenuInsert(slot)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    public boolean canExtractItem(int slot) {
+      if (!storage.slotAccess.canMenuExtract(slot)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+      if (!canInsertItem(slot)) {
+        return stack;
+      }
+
+      return super.insertItem(slot, stack, simulate);
+    }
+
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+      if (!canExtractItem(slot)) {
+        return ItemStack.EMPTY;
+      }
+
+      return super.extractItem(slot, amount, simulate);
+    }
+  }
 }

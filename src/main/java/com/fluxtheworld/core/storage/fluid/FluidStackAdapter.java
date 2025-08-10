@@ -1,4 +1,6 @@
-package com.fluxtheworld.core.storage.stack_adapter;
+package com.fluxtheworld.core.storage.fluid;
+
+import com.fluxtheworld.core.storage.StackAdapter;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -20,7 +22,7 @@ public class FluidStackAdapter implements StackAdapter<FluidStack> {
   }
 
   @Override
-  public int getAmount(FluidStack stack) {
+  public int getCount(FluidStack stack) {
     return stack.getAmount();
   }
 
@@ -30,7 +32,7 @@ public class FluidStackAdapter implements StackAdapter<FluidStack> {
   }
 
   @Override
-  public FluidStack copyWithAmount(FluidStack stack, int amount) {
+  public FluidStack copyWithCount(FluidStack stack, int amount) {
     return stack.copyWithAmount(amount);
   }
 

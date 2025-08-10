@@ -1,5 +1,9 @@
-package com.fluxtheworld.core.storage.stack_adapter;
+package com.fluxtheworld.core.storage.item;
 
+import com.fluxtheworld.core.storage.StackAdapter;
+
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemStackAdapter implements StackAdapter<ItemStack> {
@@ -20,7 +24,7 @@ public class ItemStackAdapter implements StackAdapter<ItemStack> {
   }
 
   @Override
-  public int getAmount(ItemStack stack) {
+  public int getCount(ItemStack stack) {
     return stack.getCount();
   }
 
@@ -30,7 +34,7 @@ public class ItemStackAdapter implements StackAdapter<ItemStack> {
   }
 
   @Override
-  public ItemStack copyWithAmount(ItemStack stack, int amount) {
+  public ItemStack copyWithCount(ItemStack stack, int amount) {
     return stack.copyWithCount(amount);
   }
 
@@ -47,5 +51,20 @@ public class ItemStackAdapter implements StackAdapter<ItemStack> {
   @Override
   public boolean isSameContent(ItemStack stack1, ItemStack stack2) {
     return ItemStack.isSameItemSameComponents(stack1, stack2);
+  }
+
+  @Override
+  public int getMaxStackSize(ItemStack stack) {
+    return stack.getMaxStackSize();
+  }
+
+  @Override
+  public CompoundTag save(Provider provider, ItemStack stack) {
+    return (CompoundTag) stack.saveOptional(provider);
+  }
+
+  @Override
+  public ItemStack parse(Provider provider, CompoundTag tag) {
+    return ItemStack.parseOptional(provider, tag);
   }
 }

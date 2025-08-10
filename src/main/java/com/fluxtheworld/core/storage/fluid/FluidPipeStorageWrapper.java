@@ -45,7 +45,7 @@ public class FluidPipeStorageWrapper extends PipeStackStorage<FluidStack, FluidS
     boolean simulate = action == FluidAction.SIMULATE;
     
     for (int i = 0; i < this.getTanks(); i++) {
-      if (!this.canInsert(i)) {
+      if (!this.canInsertItem(i)) {
         continue;
       }
 
@@ -62,7 +62,7 @@ public class FluidPipeStorageWrapper extends PipeStackStorage<FluidStack, FluidS
     boolean simulate = action == FluidAction.SIMULATE;
     
     for (int i = 0; i < this.getTanks(); i++) {
-      if (!this.canExtract(i)) {
+      if (!this.canExtractItem(i)) {
         continue;
       }
 
@@ -80,7 +80,7 @@ public class FluidPipeStorageWrapper extends PipeStackStorage<FluidStack, FluidS
     boolean simulate = action == FluidAction.SIMULATE;
     
     for (int i = 0; i < this.getTanks(); i++) {
-      if (!this.canExtract(i)) {
+      if (!this.canExtractItem(i)) {
         continue;
       }
 

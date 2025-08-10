@@ -1,4 +1,8 @@
-package com.fluxtheworld.core.storage.stack_adapter;
+package com.fluxtheworld.core.storage;
+
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 
 /**
  * Adapter interface for abstracting stack operations across different stack types.
@@ -30,7 +34,7 @@ public interface StackAdapter<T> {
    * @param stack The stack to measure
    * @return The amount of content in the stack
    */
-  int getAmount(T stack);
+  int getCount(T stack);
 
   /**
    * Creates a copy of the given stack.
@@ -47,7 +51,7 @@ public interface StackAdapter<T> {
    * @param amount The amount for the new stack
    * @return A copy of the stack with the specified amount
    */
-  T copyWithAmount(T stack, int amount);
+  T copyWithCount(T stack, int amount);
 
   /**
    * Increases the amount of the given stack by the specified amount.
@@ -77,4 +81,10 @@ public interface StackAdapter<T> {
    * @return True if the stacks contain the same content type
    */
   boolean isSameContent(T stack1, T stack2);
+
+  int getMaxStackSize(T stack);
+
+  CompoundTag save(Provider provider, T stack);
+
+  T parse(Provider provider, CompoundTag tag);
 }
