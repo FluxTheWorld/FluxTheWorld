@@ -1,13 +1,15 @@
 package com.fluxtheworld.core.storage.fluid;
 
+import com.fluxtheworld.core.storage.AbstractStackStorage;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class FluidStorageHandler implements IFluidHandler {
 
-  protected final FluidStorage storage;
+  protected final AbstractStackStorage<FluidStack> storage;
 
-  public FluidStorageHandler(FluidStorage storage) {
+  public FluidStorageHandler(AbstractStackStorage<FluidStack> storage) {
     this.storage = storage;
   }
 
@@ -33,7 +35,11 @@ public class FluidStorageHandler implements IFluidHandler {
 
   @Override
   public int fill(FluidStack resource, FluidAction action) {
-    return this.storage.insert(resource, action.simulate());
+    // IFluidHandler.fill() expects the amount that was filled (int)
+    // but StackStorage.insert() returns the remaining/overflow stack (FluidStack)
+    // So we calculate: filled = requested - remaining
+    FluidStack remaining = this.storage.insert(resource, action.simulate());
+    return resource.getAmount() - remaining.getAmount();
   }
 
   @Override
@@ -45,5 +51,4 @@ public class FluidStorageHandler implements IFluidHandler {
   public FluidStack drain(int maxDrain, FluidAction action) {
     return this.storage.extract(maxDrain, action.simulate());
   }
-
 }

@@ -35,7 +35,7 @@ public class ItemStorageHandler implements IItemHandlerModifiable {
 
   @Override
   public int getSlotLimit(int slot) {
-    return this.getSlotLimit(slot);
+    return this.storage.getSlotCapacity(slot);
   }
 
   @Override
@@ -45,7 +45,7 @@ public class ItemStorageHandler implements IItemHandlerModifiable {
 
   @Override
   public void setStackInSlot(int slot, ItemStack stack) {
-    this.setStackInSlot(slot, stack);
+    this.storage.setStackInSlot(slot, stack);
   }
 
 }

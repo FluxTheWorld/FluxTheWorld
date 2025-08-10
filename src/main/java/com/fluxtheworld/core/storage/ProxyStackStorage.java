@@ -35,7 +35,7 @@ public class ProxyStackStorage<T> extends AbstractStackStorage<T> {
   }
 
   @Override
-  protected int getSlotCapacity(int slot) {
+  public int getSlotCapacity(int slot) {
     return storage.getSlotCapacity(slot);
   }
 

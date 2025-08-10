@@ -22,7 +22,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
   }
 
   @Override
-  protected int getSlotCapacity(int slot) {
+  public int getSlotCapacity(int slot) {
     return this.slotAccess.getSlotCapacity(slot);
   }
 

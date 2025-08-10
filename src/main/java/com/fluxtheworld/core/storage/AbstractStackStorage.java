@@ -18,7 +18,7 @@ public abstract class AbstractStackStorage<T> {
 
   public abstract void setStackInSlot(int slot, T stack);
 
-  protected abstract int getSlotCapacity(int slot);
+  public abstract int getSlotCapacity(int slot);
 
   public boolean isValid(int slot, T stack) {
     return this.canInsert(slot);
@@ -41,4 +41,68 @@ public abstract class AbstractStackStorage<T> {
       throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + getSlotCount() + ")");
     }
   }
+
+  // region Utils
+
+  public T insert(T stack, boolean simulate) {
+    if (adapter.isEmpty(stack)) {
+      return adapter.getEmpty();
+    }
+
+    T remaining = adapter.copy(stack);
+
+    // Try to insert each slot in order
+    for (int slot = 0; slot < getSlotCount(); slot++) {
+      remaining = insert(slot, remaining, simulate);
+      if (adapter.isEmpty(remaining)) {
+        break;
+      }
+    }
+
+    return remaining;
+  }
+
+  public int fill(T resource, boolean simulate) {
+    if (adapter.isEmpty(resource)) {
+      return 0;
+    }
+
+    T remaining = insert(resource, simulate);
+    return adapter.getCount(resource) - adapter.getCount(remaining);
+  }
+
+  public T extract(T stack, boolean simulate) {
+    if (adapter.isEmpty(stack)) {
+      return adapter.getEmpty();
+    }
+
+    // Try to extract from each slot that contains the requested resource
+    for (int slot = 0; slot < getSlotCount(); slot++) {
+      T slotStack = getStackInSlot(slot);
+      if (!adapter.isEmpty(slotStack) && adapter.isSameContent(slotStack, stack)) {
+        int toDrain = Math.min(adapter.getCount(stack), adapter.getCount(slotStack));
+        return extract(slot, toDrain, simulate);
+      }
+    }
+
+    return adapter.getEmpty();
+  }
+
+  public T extract(int amount, boolean simulate) {
+    if (amount <= 0) {
+      return adapter.getEmpty();
+    }
+
+    // Try to extract from the first non-empty slot
+    for (int slot = 0; slot < getSlotCount(); slot++) {
+      T slotStack = getStackInSlot(slot);
+      if (!adapter.isEmpty(slotStack)) {
+        return extract(slot, amount, simulate);
+      }
+    }
+
+    return adapter.getEmpty();
+  }
+
+  // endregion
 }
