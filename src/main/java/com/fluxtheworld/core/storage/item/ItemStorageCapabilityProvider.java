@@ -10,9 +10,9 @@ import net.neoforged.neoforge.items.IItemHandler;
 public class ItemStorageCapabilityProvider implements ICapabilityProvider<BlockEntity, Direction, IItemHandler> {
 
   @Override
-  public @Nullable IItemHandler getCapability(BlockEntity be, Direction side) {
-    if (be instanceof ItemStorageProvider provider) {
-      return provider.getItemStorage().getForPipe(provider.getItemSideAccess(), side);
+  public @Nullable IItemHandler getCapability(BlockEntity be, @Nullable Direction side) {
+    if (be instanceof ItemStorage.Provider provider) {
+      return provider.getItemStorage().getForPipe(provider.getItemSideAccess(), side).getHandler();
     }
     return null;
   }

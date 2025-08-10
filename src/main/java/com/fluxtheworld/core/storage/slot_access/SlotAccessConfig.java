@@ -7,25 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.world.item.ItemStack;
+public class SlotAccessConfig<T> {
+  protected final List<SlotAccessRule<T>> rules;
+  protected final Map<String, Integer> namedSlots;
+  protected final Map<SlotAccessTag, List<Integer>> taggedSlots;
 
-public class ItemSlotAccessConfig {
-  private final List<SlotAccessRule<ItemStack>> rules;
-  private final Map<String, Integer> namedSlots;
-  private final Map<SlotAccessTag, List<Integer>> taggedSlots;
+  public static <T> Builder<T> builder() {
+    return new Builder<>();
+  }
 
-  private ItemSlotAccessConfig(List<SlotAccessRule<ItemStack>> rules,
-      Map<String, Integer> namedSlots, Map<SlotAccessTag, List<Integer>> taggedSlots) {
-    this.rules = rules;
-    this.namedSlots = namedSlots;
-    this.taggedSlots = taggedSlots;
+  protected SlotAccessConfig(Builder<T> builder) {
+    this.rules = builder.rules;
+    this.namedSlots = builder.namedSlots;
+    this.taggedSlots = builder.taggedSlots;
   }
 
   public int getSlotCount() {
     return rules.size();
   }
 
-  public boolean isItemValid(int slot, ItemStack stack) {
+  public boolean isValid(int slot, T stack) {
     if (slot < 0 || slot >= this.getSlotCount()) {
       return false;
     }
@@ -33,7 +34,7 @@ public class ItemSlotAccessConfig {
     return this.rules.get(slot).isValid(stack);
   }
 
-  public int getStackLimit(int slot) {
+  public int getSlotCapacity(int slot) {
     if (slot < 0 || slot >= this.getSlotCount()) {
       return 0;
     }
@@ -57,10 +58,6 @@ public class ItemSlotAccessConfig {
     return this.rules.get(slot).canPipeExtract();
   }
 
-  public static Builder builder() {
-    return new Builder();
-  }
-
   public int getSlotIndex(String name) {
     final var index = namedSlots.getOrDefault(name, -1);
     if (index == -1) {
@@ -73,24 +70,24 @@ public class ItemSlotAccessConfig {
     return this.taggedSlots.getOrDefault(tag, Collections.emptyList());
   }
 
-  public static class Builder {
-    private final List<SlotAccessRule<ItemStack>> rules;
-    private final Map<String, Integer> namedSlots;
-    private final Map<SlotAccessTag, List<Integer>> taggedSlots;
+  public static class Builder<T> {
+    protected final List<SlotAccessRule<T>> rules;
+    protected final Map<String, Integer> namedSlots;
+    protected final Map<SlotAccessTag, List<Integer>> taggedSlots;
 
-    public Builder() {
+    protected Builder() {
       this.rules = new ArrayList<>();
       this.namedSlots = new HashMap<>();
       this.taggedSlots = new EnumMap<>(SlotAccessTag.class);
     }
 
-    public Builder slot(String name, SlotAccessRule<ItemStack> rule) {
+    public Builder<T> slot(String name, SlotAccessRule<T> rule) {
       this.rules.add(rule);
       this.namedSlots.put(name, this.rules.size() - 1);
       return this;
     }
 
-    public Builder taggedSlot(String name, SlotAccessTag tag, SlotAccessRule<ItemStack> rule) {
+    public Builder<T> taggedSlot(String name, SlotAccessTag tag, SlotAccessRule<T> rule) {
       this.slot(name, rule);
       final var slots = taggedSlots.getOrDefault(tag, new ArrayList<>());
       slots.add(this.rules.size() - 1);
@@ -98,20 +95,20 @@ public class ItemSlotAccessConfig {
       return this;
     }
 
-    public Builder inputSlot(String name) {
+    public Builder<T> inputSlot(String name) {
       return this.taggedSlot(name,
           SlotAccessTag.INPUT,
-          SlotAccessRule.<ItemStack>builder().menuCanInsert().menuCanExtract().pipeCanInsert().build());
+          SlotAccessRule.<T>builder().menuCanInsert().menuCanExtract().pipeCanInsert().build());
     }
 
-    public Builder outputSlot(String name) {
+    public Builder<T> outputSlot(String name) {
       return this.taggedSlot(name,
           SlotAccessTag.OUTPUT,
-          SlotAccessRule.<ItemStack>builder().menuCanExtract().pipeCanExtract().build());
+          SlotAccessRule.<T>builder().menuCanExtract().pipeCanExtract().build());
     }
 
-    public ItemSlotAccessConfig build() {
-      return new ItemSlotAccessConfig(this.rules, this.namedSlots, this.taggedSlots);
+    public SlotAccessConfig<T> build() {
+      return new SlotAccessConfig<>(this);
     }
   }
 }
