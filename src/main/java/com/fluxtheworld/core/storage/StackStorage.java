@@ -10,33 +10,18 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
+public abstract class StackStorage<T> extends AbstractStackStorage<T> implements INBTSerializable<CompoundTag> {
 
-  protected final StackAdapter<T> adapter;
   private final NonNullList<T> slots;
 
   protected StackStorage(StackAdapter<T> adapter, int slotCount) {
-    this.adapter = adapter;
+    super(adapter);
     this.slots = NonNullList.withSize(slotCount, adapter.getEmpty());
   }
 
+  @Override
   public int getSlotCount() {
     return this.slots.size();
-  }
-
-  public boolean isValid(int slot, T stack) {
-    return this.canInsert(slot);
-  }
-
-  public boolean canInsert(int slot) {
-    return true;
-  }
-
-  public boolean canExtract(int slot) {
-    return true;
-  }
-
-  protected void onContentsChanged(int slot) {
   }
 
   public T getStackInSlot(int slot) {
@@ -125,18 +110,7 @@ public abstract class StackStorage<T> implements INBTSerializable<CompoundTag> {
     this.onContentsChanged(slot);
   }
 
-  protected int getStackLimit(int slot, T stack) {
-    return Math.min(this.getSlotCapacity(slot), adapter.getMaxStackSize(stack));
-  }
-
-  protected int getSlotCapacity(int slot) {
-    return 64;
-  }
-
-  protected void validateSlotIndex(int slot) {
-    if (slot < 0 || slot >= getSlotCount()) {
-      throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + getSlotCount() + ")");
-    }
+  protected void onContentsChanged(int slot) {
   }
 
   // region Serialization

@@ -2,19 +2,20 @@ package com.fluxtheworld.core.storage.item;
 
 import javax.annotation.Nullable;
 
+import com.fluxtheworld.core.storage.ProxyStackStorage;
 import com.fluxtheworld.core.storage.StackStorage;
 import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
-import com.fluxtheworld.core.storage.slot_access.ItemSlotAccessConfig;
+import com.fluxtheworld.core.storage.slot_access.SlotAccessConfig;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemStorage extends StackStorage<ItemStack> {
 
-  private final ItemSlotAccessConfig slotAccess;
+  private final SlotAccessConfig<ItemStack> slotAccess;
   private final @Nullable ChangeListener changeListener;
 
-  public ItemStorage(ItemSlotAccessConfig slotAccess, @Nullable ChangeListener changeListener) {
+  public ItemStorage(SlotAccessConfig<ItemStack> slotAccess, @Nullable ChangeListener changeListener) {
     super(ItemStackAdapter.INSTANCE, slotAccess.getSlotCount());
     this.slotAccess = slotAccess;
     this.changeListener = changeListener;
@@ -31,11 +32,11 @@ public class ItemStorage extends StackStorage<ItemStack> {
   }
 
   public Menu getForMenu() {
-    return new Menu(this);
+    return new Menu(this, this.slotAccess);
   }
 
   public Pipe getForPipe(SideAccessConfig sideAccess, @Nullable Direction side) {
-    return new Pipe(this, sideAccess, side);
+    return new Pipe(this, this.slotAccess, sideAccess, side);
   }
 
   @Override
@@ -55,19 +56,28 @@ public class ItemStorage extends StackStorage<ItemStack> {
     SideAccessConfig getItemSideAccess();
   }
 
-  public static class Pipe extends ItemStorageHandler {
+  public static class Pipe extends ProxyStackStorage<ItemStack> {
 
+    private final ItemStorageHandler handler;
+    private final SlotAccessConfig<ItemStack> slotAccess;
     private final SideAccessConfig sideAccess;
     private final @Nullable Direction side;
 
-    public Pipe(ItemStorage storage, SideAccessConfig sideAccess, @Nullable Direction side) {
-      super(storage);
-      this.side = side;
+    public Pipe(ItemStorage storage, SlotAccessConfig<ItemStack> slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
+      super(ItemStackAdapter.INSTANCE, storage);
+      this.handler = new ItemStorageHandler(this);
+      this.slotAccess = slotAccess;
       this.sideAccess = sideAccess;
+      this.side = side;
     }
 
-    public boolean canInsertItem(int slot) {
-      if (!storage.slotAccess.canPipeInsert(slot)) {
+    public ItemStorageHandler getHandler() {
+      return this.handler;
+    }
+
+    @Override
+    public boolean canExtract(int slot) {
+      if (!slotAccess.canPipeInsert(slot)) {
         return false;
       }
 
@@ -75,11 +85,12 @@ public class ItemStorage extends StackStorage<ItemStack> {
         return false;
       }
 
-      return true;
+      return storage.canExtract(slot);
     }
 
-    public boolean canExtractItem(int slot) {
-      if (!storage.slotAccess.canPipeExtract(slot)) {
+    @Override
+    public boolean canInsert(int slot) {
+      if (!slotAccess.canPipeExtract(slot)) {
         return false;
       }
 
@@ -87,66 +98,41 @@ public class ItemStorage extends StackStorage<ItemStack> {
         return false;
       }
 
-      return true;
-    }
-
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!canInsertItem(slot)) {
-        return stack;
-      }
-
-      return super.insertItem(slot, stack, simulate);
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!canExtractItem(slot)) {
-        return ItemStack.EMPTY;
-      }
-
-      return super.extractItem(slot, amount, simulate);
+      return storage.canInsert(slot);
     }
   }
 
-  public static class Menu extends ItemStorageHandler {
+  public static class Menu extends ProxyStackStorage<ItemStack> {
 
-    public Menu(ItemStorage storage) {
-      super(storage);
+    private final ItemStorageHandler handler;
+    private final SlotAccessConfig<ItemStack> slotAccess;
+
+    public Menu(ItemStorage storage, SlotAccessConfig<ItemStack> slotAccess) {
+      super(ItemStackAdapter.INSTANCE, storage);
+      this.handler = new ItemStorageHandler(this);
+      this.slotAccess = slotAccess;
     }
 
-    public boolean canInsertItem(int slot) {
-      if (!storage.slotAccess.canMenuInsert(slot)) {
-        return false;
-      }
-
-      return true;
-    }
-
-    public boolean canExtractItem(int slot) {
-      if (!storage.slotAccess.canMenuExtract(slot)) {
-        return false;
-      }
-
-      return true;
+    public ItemStorageHandler getHandler() {
+      return this.handler;
     }
 
     @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if (!canInsertItem(slot)) {
-        return stack;
+    public boolean canExtract(int slot) {
+      if (!slotAccess.canMenuInsert(slot)) {
+        return false;
       }
 
-      return super.insertItem(slot, stack, simulate);
+      return storage.canExtract(slot);
     }
 
     @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-      if (!canExtractItem(slot)) {
-        return ItemStack.EMPTY;
+    public boolean canInsert(int slot) {
+      if (!slotAccess.canMenuExtract(slot)) {
+        return false;
       }
 
-      return super.extractItem(slot, amount, simulate);
+      return storage.canInsert(slot);
     }
   }
 }

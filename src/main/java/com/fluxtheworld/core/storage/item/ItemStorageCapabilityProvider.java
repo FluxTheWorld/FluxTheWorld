@@ -12,7 +12,7 @@ public class ItemStorageCapabilityProvider implements ICapabilityProvider<BlockE
   @Override
   public @Nullable IItemHandler getCapability(BlockEntity be, @Nullable Direction side) {
     if (be instanceof ItemStorage.Provider provider) {
-      return provider.getItemStorage().getForPipe(provider.getItemSideAccess(), side);
+      return provider.getItemStorage().getForPipe(provider.getItemSideAccess(), side).getHandler();
     }
     return null;
   }

@@ -2,7 +2,6 @@ package com.fluxtheworld.core.storage;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 
 /**
  * Adapter interface for abstracting stack operations across different stack types.

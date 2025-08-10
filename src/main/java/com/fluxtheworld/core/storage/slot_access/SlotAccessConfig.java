@@ -7,34 +7,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SlotAccessConfig<T> {
+public class SlotAccessConfig<T> {
   protected final List<SlotAccessRule<T>> rules;
   protected final Map<String, Integer> namedSlots;
   protected final Map<SlotAccessTag, List<Integer>> taggedSlots;
 
-  protected SlotAccessConfig(List<SlotAccessRule<T>> rules,
-      Map<String, Integer> namedSlots, Map<SlotAccessTag, List<Integer>> taggedSlots) {
-    this.rules = rules;
-    this.namedSlots = namedSlots;
-    this.taggedSlots = taggedSlots;
+  public static <T> Builder<T> builder() {
+    return new Builder<>();
+  }
+
+  protected SlotAccessConfig(Builder<T> builder) {
+    this.rules = builder.rules;
+    this.namedSlots = builder.namedSlots;
+    this.taggedSlots = builder.taggedSlots;
   }
 
   public int getSlotCount() {
     return rules.size();
   }
 
-  public abstract boolean isValid(int slot, T stack);
-
-  /*
-     @Override
-  public boolean isValid(int slot, ItemStack stack) {
+  public boolean isValid(int slot, T stack) {
     if (slot < 0 || slot >= this.getSlotCount()) {
       return false;
     }
 
     return this.rules.get(slot).isValid(stack);
   }
-   */
 
   public int getSlotCapacity(int slot) {
     if (slot < 0 || slot >= this.getSlotCount()) {
@@ -72,7 +70,7 @@ public abstract class SlotAccessConfig<T> {
     return this.taggedSlots.getOrDefault(tag, Collections.emptyList());
   }
 
-  public abstract static class Builder<T, B extends Builder<T, B, C>, C extends SlotAccessConfig<T>> {
+  public static class Builder<T> {
     protected final List<SlotAccessRule<T>> rules;
     protected final Map<String, Integer> namedSlots;
     protected final Map<SlotAccessTag, List<Integer>> taggedSlots;
@@ -83,37 +81,34 @@ public abstract class SlotAccessConfig<T> {
       this.taggedSlots = new EnumMap<>(SlotAccessTag.class);
     }
 
-    @SuppressWarnings("unchecked")
-    protected B self() {
-      return (B) this;
-    }
-
-    public B slot(String name, SlotAccessRule<T> rule) {
+    public Builder<T> slot(String name, SlotAccessRule<T> rule) {
       this.rules.add(rule);
       this.namedSlots.put(name, this.rules.size() - 1);
-      return self();
+      return this;
     }
 
-    public B taggedSlot(String name, SlotAccessTag tag, SlotAccessRule<T> rule) {
+    public Builder<T> taggedSlot(String name, SlotAccessTag tag, SlotAccessRule<T> rule) {
       this.slot(name, rule);
       final var slots = taggedSlots.getOrDefault(tag, new ArrayList<>());
       slots.add(this.rules.size() - 1);
       taggedSlots.put(tag, slots);
-      return self();
+      return this;
     }
 
-    public B inputSlot(String name) {
+    public Builder<T> inputSlot(String name) {
       return this.taggedSlot(name,
           SlotAccessTag.INPUT,
           SlotAccessRule.<T>builder().menuCanInsert().menuCanExtract().pipeCanInsert().build());
     }
 
-    public B outputSlot(String name) {
+    public Builder<T> outputSlot(String name) {
       return this.taggedSlot(name,
           SlotAccessTag.OUTPUT,
           SlotAccessRule.<T>builder().menuCanExtract().pipeCanExtract().build());
     }
 
-    public abstract C build();
+    public SlotAccessConfig<T> build() {
+      return new SlotAccessConfig<>(this);
+    }
   }
 }

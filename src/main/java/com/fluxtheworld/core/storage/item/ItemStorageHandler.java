@@ -1,13 +1,15 @@
 package com.fluxtheworld.core.storage.item;
 
+import com.fluxtheworld.core.storage.AbstractStackStorage;
+
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class ItemStorageHandler implements IItemHandlerModifiable {
 
-  protected final ItemStorage storage;
+  protected final AbstractStackStorage<ItemStack> storage;
 
-  public ItemStorageHandler(ItemStorage storage) {
+  public ItemStorageHandler(AbstractStackStorage<ItemStack> storage) {
     this.storage = storage;
   }
 
