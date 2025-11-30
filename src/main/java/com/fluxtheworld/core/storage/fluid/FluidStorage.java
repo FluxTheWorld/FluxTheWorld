@@ -1,4 +1,4 @@
-package com.fluxtheworld.core.storage.item;
+package com.fluxtheworld.core.storage.fluid;
 
 import javax.annotation.Nullable;
 
@@ -8,15 +8,15 @@ import com.fluxtheworld.core.storage.side_access.SideAccessConfig;
 import com.fluxtheworld.core.storage.slot_access.SlotAccessConfig;
 
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-public class ItemStorage extends StackStorage<ItemStack> {
+public class FluidStorage extends StackStorage<FluidStack> {
 
-  private final SlotAccessConfig<ItemStack> slotAccess;
+  private final SlotAccessConfig<FluidStack> slotAccess;
   private final @Nullable ChangeListener changeListener;
 
-  public ItemStorage(SlotAccessConfig<ItemStack> slotAccess, @Nullable ChangeListener changeListener) {
-    super(ItemStackAdapter.INSTANCE, slotAccess.getSlotCount());
+  public FluidStorage(SlotAccessConfig<FluidStack> slotAccess, @Nullable ChangeListener changeListener) {
+    super(FluidStackAdapter.INSTANCE, slotAccess.getSlotCount());
     this.slotAccess = slotAccess;
     this.changeListener = changeListener;
   }
@@ -27,7 +27,7 @@ public class ItemStorage extends StackStorage<ItemStack> {
   }
 
   @Override
-  public boolean isValid(int slot, ItemStack stack) {
+  public boolean isValid(int slot, FluidStack stack) {
     return this.slotAccess.isValid(slot, stack) && super.isValid(slot, stack);
   }
 
@@ -42,36 +42,36 @@ public class ItemStorage extends StackStorage<ItemStack> {
   @Override
   protected void onContentsChanged(int slot) {
     if (this.changeListener != null) {
-      this.changeListener.onItemStorageChanged(slot);
+      this.changeListener.onFluidStorageChanged(slot);
     }
   }
 
   public interface ChangeListener {
-    void onItemStorageChanged(int slot);
+    void onFluidStorageChanged(int slot);
   }
 
   public interface Provider {
-    ItemStorage getItemStorage();
+    FluidStorage getFluidStorage();
 
-    SideAccessConfig getItemSideAccess();
+    SideAccessConfig getFluidSideAccess();
   }
 
-  public static class Pipe extends ProxyStackStorage<ItemStack> {
+  public static class Pipe extends ProxyStackStorage<FluidStack> {
 
-    private final ItemStorageHandler handler;
-    private final SlotAccessConfig<ItemStack> slotAccess;
+    private final FluidStorageHandler handler;
+    private final SlotAccessConfig<FluidStack> slotAccess;
     private final SideAccessConfig sideAccess;
     private final @Nullable Direction side;
 
-    public Pipe(ItemStorage storage, SlotAccessConfig<ItemStack> slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
-      super(ItemStackAdapter.INSTANCE, storage);
-      this.handler = new ItemStorageHandler(this);
+    public Pipe(FluidStorage storage, SlotAccessConfig<FluidStack> slotAccess, SideAccessConfig sideAccess, @Nullable Direction side) {
+      super(FluidStackAdapter.INSTANCE, storage);
+      this.handler = new FluidStorageHandler(this);
       this.slotAccess = slotAccess;
       this.sideAccess = sideAccess;
       this.side = side;
     }
 
-    public ItemStorageHandler getHandler() {
+    public FluidStorageHandler getHandler() {
       return this.handler;
     }
 
@@ -102,18 +102,18 @@ public class ItemStorage extends StackStorage<ItemStack> {
     }
   }
 
-  public static class Menu extends ProxyStackStorage<ItemStack> {
+  public static class Menu extends ProxyStackStorage<FluidStack> {
 
-    private final ItemStorageHandler handler;
-    private final SlotAccessConfig<ItemStack> slotAccess;
+    private final FluidStorageHandler handler;
+    private final SlotAccessConfig<FluidStack> slotAccess;
 
-    public Menu(ItemStorage storage, SlotAccessConfig<ItemStack> slotAccess) {
-      super(ItemStackAdapter.INSTANCE, storage);
-      this.handler = new ItemStorageHandler(this);
+    public Menu(FluidStorage storage, SlotAccessConfig<FluidStack> slotAccess) {
+      super(FluidStackAdapter.INSTANCE, storage);
+      this.handler = new FluidStorageHandler(this);
       this.slotAccess = slotAccess;
     }
 
-    public ItemStorageHandler getHandler() {
+    public FluidStorageHandler getHandler() {
       return this.handler;
     }
 
